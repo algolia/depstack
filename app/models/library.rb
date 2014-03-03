@@ -76,6 +76,7 @@ class Library < ActiveRecord::Base
         raise "Unknown manager: #{manager}"
       end
     end
+    p(library) if library.new_record?
     library.save!
     library
   end
