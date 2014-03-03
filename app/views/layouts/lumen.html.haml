@@ -1,0 +1,228 @@
+!!! 5
+%html(lang="en")
+  %head
+    %meta(charset="utf-8")
+    %meta(http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1")
+    %meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    %title= content_for?(:title) ? yield(:title) : "depstack"
+    = csrf_meta_tags
+    /[if lt IE 9]
+      = javascript_include_tag "http://html5shim.googlecode.com/svn/trunk/html5.js"
+    = stylesheet_link_tag "lumen", :media => "all"
+
+  %body
+
+    .container
+      #header{class: ('mini' if !current_page?(root_path))}
+        - if current_page?(root_path)
+          .jumbotron
+            %h1
+              %i.fa.fa-bars
+              Depstack
+            %p Find libraries used by famous open-source projects
+            #social.hidden-xs.text-center
+              %iframe{id: "gh-fork", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=fork", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "53px", height: "20px"}
+              %iframe{id: "gh-start", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=watch&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "110px", height: "20px"}
+              %a.twitter-follow-button{href: "https://twitter.com/algolia", "data-show-count" => "false", "data-show-screen-name" => "true"}Follow @algolia
+              %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "algolia", 'data-text' => 'Find libraries used by famous open-source projects by @algolia'} Tweet
+
+        #search-form.form-horizontal
+          %h1.logo
+            = link_to root_path do
+              %i.fa.fa-bars
+              Depstack
+          .form-group.has-feedback
+            %input.form-control#q{type:'text', autocorrect: 'off', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Find project or libraries'}
+            %span.glyphicon.glyphicon-search.form-control-feedback
+          .btn-group
+            %button{type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle' => 'dropdown'}
+              %span#hits-type Libraries
+              %span.caret
+            %ul.dropdown-menu{role: 'menu'}
+              %li= link_to 'Libraries', '#', onclick: 'return toggleSearch(this);'
+              %li= link_to 'Projects', '#', onclick: 'return toggleSearch(this);'
+
+      .row
+        .col-lg-2.col-sm-3.hidden-xs
+          #facets
+        .col-lg-8.col-sm-9
+          #stats
+          #hits
+          #noresults{style: 'display: none'}
+            %h3.text-center No results for query "<span class="q"></span>"
+
+      #content
+        = yield
+
+    %footer
+      .container
+        .pull-left
+          = link_to "Fork me on github", "http://github.com/algolia/FIXME", class: 'text-muted'
+        .pull-right
+          %i.fa.fa-code
+          with
+          %i.fa.fa-heart
+          by
+          = link_to 'http://www.algolia.com' do
+            %img{src: '//www.algolia.com/assets/algolia128x40.png'}
+
+    %script#project-hit{type: 'text/template'}
+      :plain
+        <div class="hit">
+          <div class="title">
+            <a href="/projects/{{ user }}/{{ name }}">{{{ _highlightResult.name.value }}}</a>
+          </div>
+          <div class="link">
+            <a href="https://github.com/{{ user }}/{{ name }}">https://github.com/{{{ _highlightResult.user.value }}}/{{{ _highlightResult.name.value }}}</a>
+          </div>
+          <div class="info">{{{ _highlightResult.description.value }}}</div>
+        </div>
+
+    %script#library-hit{type: 'text/template'}
+      :plain
+        <div class="hit">
+          <div class="title">
+            <a href="/libraries/{{ name }}">{{{ _highlightResult.name.value }}}</a>
+          </div>
+          <div class="link">
+            <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
+          </div>
+          <div class="info">{{{ _highlightResult.info.value }}}</div>
+          <div class="dependencies">
+            <ul class="list-inline">
+              <li>Used by:</li>
+              {{#top_projects}}
+              <li><a href="/projects/{{ user }}/{{ name }}">{{name}}</a></li>
+              {{/top_projects}}
+            </ul>
+          </div>
+        </div>
+
+    = javascript_include_tag "lumen"
+    :javascript
+      !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      $(document).ready(function() {
+        var $q = $('#q');
+        var $hits = $('#hits');
+        var $type = $('#hits-type');
+        var $stats = $('#stats');
+        var $facets = $('#facets');
+        var $noresults = $('#noresults');
+        var $content = $('#content');
+
+        var LABELS = {
+          "language": "Language",
+          "platform": "Platform",
+          "libraries": "Using",
+          "top_projects.name": "Used by"
+        };
+
+        var client = new AlgoliaSearch('#{ENV['ALGOLIA_APPLICATION_ID']}', '#{ENV['ALGOLIA_SEARCH_ONLY_API_KEY']}');
+        var libraries = client.initIndex('#{Library.index_name}');
+        var projects = client.initIndex('#{Project.index_name}');
+        var index = libraries;
+        var mini = false;
+        var refinements = {};
+
+        var projectTemplate = Hogan.compile($('#project-hit').text());
+        var libraryTemplate = Hogan.compile($('#library-hit').text());
+        var template = libraryTemplate;
+
+        $q.on('keyup change', function() {
+          refinements = {};
+          search();
+        });
+
+        function searchCallback(success, content) {
+          if (!success || content.query != $q.val()) {
+            return;
+          }
+
+          if (content.hits.length > 0) {
+            $stats.html('Results <strong>1 - <span class="">' + content.hits.length + '</span></strong> of <strong>' + content.nbHits + '</strong> in <strong>' + content.processingTimeMS + ' ms</strong>');
+            $noresults.hide();
+          } else {
+            $stats.html('');
+            $noresults.show();
+          }
+
+          var facets = '';
+          for (var facet in content.facets) {
+            facets += '<h3>' + LABELS[facet] + '</h3><ul class="list-unstyled">';
+            var values = [];
+            for (var value in content.facets[facet]) {
+              values.push({ key: value, count: content.facets[facet][value] });
+            }
+            values = values.sort(function(a,b) { return b.count - a.count; });
+            for (var i = 0; i < values.length; ++i) {
+              var v = facet + ':' + values[i].key;
+              var clazz = refinements[v] ? 'refined' : '';
+              facets += '<li class="' + clazz + '"><a href="javascript:toggleRefinenement(\'' + v + '\')">' + values[i].key + '</a> (' + values[i].count + ')</li>';
+            }
+            facets += '</ul>';
+          }
+          $facets.html(facets);
+
+          var hits = '';
+          for (var i = 0; i < content.hits.length; ++i) {
+            var hit = content.hits[i];
+            hits += template.render(hit);
+          }
+          $hits.html(hits);
+        }
+
+        window.toggleSearch = function(link) {
+          var v = $(link).text();
+          $type.text(v);
+          if (v === 'Libraries') {
+            template = libraryTemplate;
+            index = libraries;
+          } else {
+            template = projectTemplate;
+            index = projects;
+          }
+          search();
+          return false;
+        };
+
+        window.toggleRefinenement = function(v) {
+          refinements[v] = !refinements[v];
+          search();
+          return false;
+        };
+
+        function search() {
+          var q = $q.val().trim();
+          if (q === '') {
+            $hits.empty();
+            $stats.empty();
+            $facets.empty();
+            $noresults.hide();
+            $content.show();
+            return;
+          }
+          $content.hide();
+          $('.q').text(q);
+          if (!mini) {
+            mini = true;
+            $('#header').addClass('mini');
+          }
+
+          var facetFilters = [];
+          for (var refine in refinements) {
+            if (refinements[refine]) {
+              facetFilters.push(refine);
+            }
+          }
+
+          index.search(q, searchCallback, {
+            hitsPerPage: 10,
+            facets: '*',
+            maxValuesPerFacet: 20,
+            minWordSizefor1Typo: 5,
+            minWordSizefor2Typos: 9,
+            facetFilters: facetFilters.join(',')
+          });
+        }
+      });
+    = yield(:page_javascript) if content_for?(:page_javascript)

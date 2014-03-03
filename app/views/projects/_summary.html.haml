@@ -1,0 +1,10 @@
+.panel.panel-default
+  .panel-heading
+    .pull-right
+      %iframe{src: "http://ghbtns.com/github-btn.html?user=#{summary.user}&repo=#{summary.name}&type=watch&count=true",
+  allowtransparency: true, frameborder: 0, scrolling: 0, width: 110, height: 20}
+      %iframe{src: "http://ghbtns.com/github-btn.html?user=#{summary.user}&repo=#{summary.name}&type=fork&count=true",
+  allowtransparency: true, frameborder: 0, scrolling: 0, width: 95, height: 20}
+    %i.fa.fa-github
+    = link_to "#{summary.user} / #{summary.name}", project_path(summary.user, summary.name)
+  .panel-body= summary.description

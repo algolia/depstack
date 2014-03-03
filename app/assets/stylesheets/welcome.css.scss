@@ -1,0 +1,174 @@
+// Place all the styles related to the welcome controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+#header {
+  .jumbotron {
+    margin-top: 30px;
+    border: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  #search-form {
+    position: relative;
+
+    .form-group {
+      width: 50%;
+      margin: 0px auto;
+    }
+    .btn-group {
+      position: absolute;
+      left: 75%;
+      top: 0px;
+      margin-left: -20px;
+      .btn {
+        height: 37px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+      .btn:hover {
+        margin: 0px;
+      }
+    }
+
+    .logo {
+      display: none;
+    }
+  }
+}
+
+#header.mini {
+  height: 120px;
+
+  .jumbotron {
+    display: none;
+  }
+
+  #search-form {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background: #F1F1F1;
+
+    .logo {
+      display: block;
+      position: absolute;
+      top: 8px;
+      left: 25%;
+      margin-left: -200px;
+
+      a {
+        color: rgb(85, 85, 85);
+        text-decoration: none;
+      }
+    }
+    .btn-group {
+      top: 30px;
+    }
+  }
+}
+
+.hit {
+  margin-bottom: 23px;
+
+  em {
+    font-style: normal;
+    background: #F7FFBA;
+  }
+
+  .title {
+    a {
+      font-size: 18px;
+      color: #1e0fbe;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a:visited {
+      color: #609;
+    }
+  }
+
+  .link {
+    a {
+      color: #006621;
+      em {
+        background: none;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .info {
+    color: black;
+  }
+
+  .dependencies {
+    a {
+      color: #1e0fbe;
+    } 
+
+    a:visited {
+      color: #609;
+    }   
+  }
+  
+}
+
+a.green {
+  color: #006621;
+}
+a.gree:hover {
+  color: #006621; 
+}
+
+#facets {
+  li.refined {
+    a {
+      font-weight: bold;
+    }
+  }
+}
+
+#content {
+  margin-top: 50px;
+}
+
+#social {
+  padding-top: 30px;
+}
+
+#readme {
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    word-wrap: normal;
+  }
+
+  pre {
+    pre {
+      margin: 0px;
+      padding: 0px;
+      border: none;
+      background: transparent;
+    }
+  }
+}
+
+footer {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f1f1;
+  img {
+    height: 1em
+  }
+}

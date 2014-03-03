@@ -1,0 +1,12 @@
+.row
+  .col-lg-6
+    %h2 Featured projects
+    = render partial: '/projects/summary', collection: Project.where('watcher_count > 1000').order('RANDOM()').limit(3).load
+  .col-lg-6
+    %h2.text-right.visible-lg Featured libraries
+    %h2.hidden-lg Featured libraries
+    = render partial: '/libraries/summary', collection: Library.order('RANDOM()').limit(3).load
+
+- content_for :page_javascript do
+  :javascript
+    (function() { $('#q').focus(); })();
