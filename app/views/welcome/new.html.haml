@@ -1,9 +1,10 @@
+- libraries = 6.times.map { Library.offset(rand(Library.count)).first }
 %h2.visible-lg Featured libraries
 .row
   .col-lg-6
-    = render partial: '/libraries/summary', collection: Library.first(3)
+    = render partial: '/libraries/summary', collection: libraries.first(3)
   .col-lg-6
-    = render partial: '/libraries/summary', collection: Library.first(3)
+    = render partial: '/libraries/summary', collection: libraries.last(3)
 
 - content_for :page_javascript do
   :javascript
