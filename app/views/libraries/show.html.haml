@@ -4,24 +4,12 @@
     - unless @library.homepage_uri.blank?
       %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
     %h2
-      %small= @library.info
+      %small= @library.description
   .col-lg-3.visible-lg.text-center
     .panel.panel-default
-      .panel-heading <span class="b">#</span> projects using it
+      .panel-heading <span class="b">#</span> libraries using it
       .panel-body
-        .text-huge= number_with_delimiter @library.projects.count
-  .col-lg-3.visible-lg.text-center
-    .panel.panel-default
-      .panel-heading <span class="b">∑</span> watchers count
-      .panel-body
-        .text-huge= number_with_delimiter @library.projects_watcher_count
-
-- projects = @library.projects.top.first(10)
-- unless projects.empty?
-  .row
-    .col-lg-12
-      %h2 Used by
-      = render partial: '/projects/summary', collection: projects
+        .text-huge= number_with_delimiter @library.used_by.count
 
 - if @library.github?
   .row

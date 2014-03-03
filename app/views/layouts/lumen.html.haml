@@ -32,15 +32,17 @@
               %i.fa.fa-bars
               Depstack
           .form-group.has-feedback
-            %input.form-control#q{type:'text', autocorrect: 'off', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Find project or libraries'}
+            %input.form-control#q{type:'text', autocorrect: 'off', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Find libraries by name or description'}
             %span.glyphicon.glyphicon-search.form-control-feedback
           .btn-group
             %button{type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle' => 'dropdown'}
-              %span#hits-type Libraries
+              %span#hits-type All managers
               %span.caret
             %ul.dropdown-menu{role: 'menu'}
-              %li= link_to 'Libraries', '#', onclick: 'return toggleSearch(this);'
-              %li= link_to 'Projects', '#', onclick: 'return toggleSearch(this);'
+              %li= link_to 'All managers', '#', onclick: 'return toggleManager(this, "all");'
+              %li= link_to 'Rubygems', '#', onclick: 'return toggleManager(this, "rubygems");'
+              %li= link_to 'NPM', '#', onclick: 'return toggleManager(this, "npm");'
+              %li= link_to 'Composer', '#', onclick: 'return toggleManager(this, "composer");'
 
       .row
         .col-lg-2.col-sm-3.hidden-xs
@@ -65,18 +67,6 @@
           by
           = link_to 'http://www.algolia.com' do
             %img{src: '//www.algolia.com/assets/algolia128x40.png'}
-
-    %script#project-hit{type: 'text/template'}
-      :plain
-        <div class="hit">
-          <div class="title">
-            <a href="/projects/{{ user }}/{{ name }}">{{{ _highlightResult.name.value }}}</a>
-          </div>
-          <div class="link">
-            <a href="https://github.com/{{ user }}/{{ name }}">https://github.com/{{{ _highlightResult.user.value }}}/{{{ _highlightResult.name.value }}}</a>
-          </div>
-          <div class="info">{{{ _highlightResult.description.value }}}</div>
-        </div>
 
     %script#library-hit{type: 'text/template'}
       :plain
@@ -111,16 +101,12 @@
         var $content = $('#content');
 
         var LABELS = {
-          "language": "Language",
-          "platform": "Platform",
-          "libraries": "Using",
-          "top_projects.name": "Used by"
+          "manager": "Manager",
+          "platform": "Platform"
         };
 
         var client = new AlgoliaSearch('#{ENV['ALGOLIA_APPLICATION_ID']}', '#{ENV['ALGOLIA_SEARCH_ONLY_API_KEY']}');
-        var libraries = client.initIndex('#{Library.index_name}');
-        var projects = client.initIndex('#{Project.index_name}');
-        var index = libraries;
+        var index = client.initIndex('#{Library.index_name}');
         var mini = false;
         var refinements = {};
 
@@ -171,16 +157,10 @@
           $hits.html(hits);
         }
 
-        window.toggleSearch = function(link) {
+        window.toggleManager = function(link, lang) {
           var v = $(link).text();
           $type.text(v);
-          if (v === 'Libraries') {
-            template = libraryTemplate;
-            index = libraries;
-          } else {
-            template = projectTemplate;
-            index = projects;
-          }
+          // FIXME lang
           search();
           return false;
         };

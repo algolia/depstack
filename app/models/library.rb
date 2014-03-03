@@ -3,68 +3,80 @@ require 'open-uri'
 class Library < ActiveRecord::Base
   include AlgoliaSearch
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
-    attribute :name, :info, :downloads, :platform, :homepage_uri, :projects_watcher_count
-    add_attribute :top_projects do
-      projects.top.first(5).map do |project|
-        { name: project.name, user: project.user }
-      end
-    end
-    attributesForFaceting [:platform, 'top_projects.name']
-    attributesToIndex [:name, :info, :homepage_uri]
-    customRanking ['desc(projects_watcher_count)']
+    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score
+    attributesForFaceting [:manager, :platform]
+    attributesToIndex [:name, :description, :homepage_uri]
+    customRanking ['desc(score)']
   end
 
-  has_many :dependencies
-  has_many :projects, through: :dependencies
+  has_many :dependencies, foreign_key: 'source_id'
+  has_many :using, through: :dependencies, source: :destination
 
-  def projects_watcher_count
-    projects.inject(0) { |sum, project| sum + project.watcher_count }
+  has_many :requirements, class_name: 'Dependency', foreign_key: 'destination_id'
+  has_many :used_by, through: :requirements, source: :source
+
+  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
+
+  def score
+    used_by.count
   end
 
   def github?
-    homepage_uri && homepage_uri['github.com']
+    uri = repository_uri || homepage_uri
+    uri && uri['github.com']
   end
 
   def github_repository
     return nil if !github?
-    homepage_uri.scan(/github\.com\/([^\/]+)\/([^\/]+)/).first
+    (repository_uri || homepage_uri).scan(/github\.com\/([^\/]+)\/([^\/]+)/).first
   end
 
-  def self.get(name, manager)
-    library = Library.find_or_initialize_by(name: name)
+  def self.load!(manager, name)
+    manager_cd = Library.managers[manager.to_s]
+    library = Library.find_or_initialize_by(manager_cd: manager_cd, name: name)
     if library.new_record?
-      case manager
-      when 'rubygems'
+      case manager_cd
+      when Library.rubygems
         json = JSON.parse(open("http://rubygems.org/api/v1/gems/#{name}.json").read) rescue nil
         if json
           library.downloads = json['downloads']
           library.platform = json['platform']
-          library.info = json['info']
+          library.description = json['info']
           library.homepage_uri = json['homepage_uri']
+          library.repository_uri = json['source_code_uri']
         end
-        library.save!
-      when 'npm', 'bower'
+      when Library.npm, Library.bower
         json = JSON.parse(open("https://registry.npmjs.org/#{name}").read) rescue nil
         if json
           library.downloads = 0
-          library.platform = (json['versions'] || {}).detect { |version,spec| (spec['engines'] || {}).detect { |k,v| k['node'] } } ? 'node' : 'js'
-          library.info = json['description']
+          library.platform = (json['versions'] || {}).detect { |version,spec| (spec['engines'] || {}).detect { |k,v| k['node'] } } ? 'node' : 'js' rescue 'js'
+          library.description = json['description']
           library.homepage_uri = json['homepage']
+          library.repository_uri = json['repository'] && json['repository']['url']
         end
-        library.save!
-      when 'composer'
+      when Library.composer
         json = JSON.parse(open("https://packagist.org/packages/#{name}.json").read) rescue nil
         if json
-          library.downloads = json['downloads'] && json['downloads']['total']
+          library.downloads = json['package']['downloads'] && json['package']['downloads']['total']
           library.platform = 'php'
-          library.info = json['description']
-          library.homepage_uri = json['repository']
+          library.description = json['package']['description']
+          library.homepage_uri = nil
+          library.repository_uri = json['package']['repository']
         end
-        library.save!
+      when Library.pip
+        json = JSON.parse(open("https://pypi.python.org/pypi/#{name}/json").read) rescue nil
+        if json
+          library.downloads = json['info']['downloads']['last_month']
+          library.platform = 'python'
+          library.description = json['info']['summary']
+          library.homepage_uri = json['info']['home_page']
+          library.repository_uri = json['info']['project_url']
+        end
       else
-        raise "Unknown manager: #{dependency_manager}"
+        raise "Unknown manager: #{manager}"
       end
     end
+    library.save!
     library
   end
 

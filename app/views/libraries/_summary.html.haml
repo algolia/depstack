@@ -2,9 +2,10 @@
 .panel.panel-default
   .panel-heading
     .pull-right
-      %em= "#{pluralize library.projects.count, 'project'} using it"
+      %em= "#{pluralize library.used_by.count, 'library'} using it"
+      %span.label.label-info= library.manager
     %i.fa.fa-code
     = link_to library.name, library_path(library.name)
     - if dependency
       = " (#{[dependency.environment, dependency.requirement].compact.join(', ')})"
-  .panel-body= library.info
+  .panel-body= library.description

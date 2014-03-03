@@ -21,6 +21,7 @@ gem 'algoliasearch-rails'
 gem 'hogan_assets'
 gem 'nokogiri'
 gem 'highlight', :require => 'simplabs/highlight'
+gem 'simple_enum'
 
 gem 'github-markup'
 gem 'posix-spawn'

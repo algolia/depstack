@@ -164,6 +164,8 @@ GEM
       sass (>= 3.1.10)
       sprockets-rails (~> 2.0.0)
     sexp_processor (4.4.1)
+    simple_enum (1.6.8)
+      activesupport (>= 3.0.0)
     simple_form (3.0.1)
       actionpack (>= 4.0.0, < 4.1)
       activemodel (>= 4.0.0, < 4.1)
@@ -234,6 +236,7 @@ DEPENDENCIES
   redcarpet
   rspec-rails
   sass-rails (~> 4.0.0)
+  simple_enum
   simple_form
   sqlite3
   therubyracer
