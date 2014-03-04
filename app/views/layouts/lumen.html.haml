@@ -11,6 +11,12 @@
     = stylesheet_link_tag "lumen", :media => "all"
 
   %body
+    - if flash[:error]
+      .alert.alert-warning.alert-dismissable.alert-top
+        %button{type: "button", class: "close", "data-dismiss" => "alert", "aria-hidden" => true} &times;
+        %i.fa.fa-exclamation-triangle
+        %strong Warning:
+        = flash[:error]
 
     .container
       #header{class: ('mini' if !current_page?(root_path))}
@@ -43,6 +49,10 @@
           .form-group.has-feedback
             %input.form-control#q{type:'text', autocorrect: 'off', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Find libraries by name or description'}
             %span.glyphicon.glyphicon-search.form-control-feedback
+          .powered-by
+            by
+            = link_to 'http://www.algolia.com' do
+              %img{src: '//www.algolia.com/assets/algolia128x40.png'}
           .btn-group
             %button{type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle' => 'dropdown'}
               %span#hits-type All managers
@@ -82,22 +92,33 @@
       :plain
         <div class="hit">
           <div class="title">
-            <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.name.value }}}</a> ({{ score }})
+            {{#voted}}
+            <i class="fa fa-star text-warning"></i>
+            {{/voted}}
+            {{^voted}}
+            <a href="/vote/{{ objectID }}"><i class="fa fa-chevron-circle-up text-success"></i></a>
+            {{/voted}}
+            {{ score }}
+            <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.name.value }}}</a>
+            <span class="label label-info">{{ manager }}</span>
           </div>
           <div class="link">
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
           </div>
           <div class="info">{{{ _highlightResult.description.value }}}</div>
-          {{#used_by?}}
+          {{#used_by_count}}
           <div class="dependencies">
             <ul class="list-inline">
               <li>Used by:</li>
               {{#used_by}}
-              <li><a href="/libraries/{{ manager }}/{{ name }}">{{name}}</a></li>
+              <li><a href="/libraries/{{ manager }}/{{ . }}">{{ . }}</a></li>
               {{/used_by}}
+              {{#others}}
+              <li>and {{ others }} others
+              {{/others}}
             </ul>
           </div>
-          {{/used_by?}}
+          {{/used_by_count}}
         </div>
 
     = javascript_include_tag "lumen"
@@ -130,6 +151,8 @@
           refinements = {};
           search();
         });
+
+        var votes = #{(logged_in? ? current_user.votes.map(&:library_id) : []).inspect};
 
         function searchCallback(success, content) {
           if (!success || content.query != $q.val()) {
@@ -164,6 +187,10 @@
           var hits = '';
           for (var i = 0; i < content.hits.length; ++i) {
             var hit = content.hits[i];
+            if (hit.used_by_count > hit.used_by.length) {
+              hit['others'] = hit.used_by_count - hit.used_by.length;
+            }
+            hit['voted'] = $.inArray(parseInt(hit.objectID), votes) > -1;
             hits += template.render(hit);
           }
           $hits.html(hits);

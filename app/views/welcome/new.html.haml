@@ -1,3 +1,22 @@
+.text-center
+  %ul.list-inline
+    %li
+      %strong Rubygems: 
+      = number_with_delimiter Library.where(manager_cd: Library.rubygems).count
+      libraries
+    %li
+      %strong NPM: 
+      = number_with_delimiter Library.where(manager_cd: Library.npm).count
+      libraries
+    %li
+      %strong PIP:
+      = number_with_delimiter Library.where(manager_cd: Library.pip).count
+      libraries
+    %li
+      %strong Composer:
+      = number_with_delimiter Library.where(manager_cd: Library.composer).count
+      libraries
+
 - libraries = 6.times.map { Library.offset(rand(Library.count)).first }
 %h2.visible-lg Featured libraries
 .row

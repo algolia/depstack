@@ -4,11 +4,11 @@ class VotesController < ApplicationController
   def toggle
     vote = current_user.votes.find_by(library_id: params[:id])
     if vote.nil?
-      current_user.votes.create(library_id: params[:id])
+      vote = current_user.votes.create(library_id: params[:id])
     else
       vote.destroy
     end
-    redirect_to :back
+    redirect_to library_path(vote.library.manager, vote.library.name)
   end
 
 end

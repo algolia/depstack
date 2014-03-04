@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   protected
   def authenticate_user!
     return true if logged_in?
-    redirect_to root_path
+    redirect_to root_path, flash: { error: 'To up-vote, you first need to sign in!' }
     return false
   end
 end

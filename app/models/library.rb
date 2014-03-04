@@ -3,16 +3,19 @@ require 'open-uri'
 class Library < ActiveRecord::Base
   include AlgoliaSearch
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
-    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score
+    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
     add_attribute :used_by do
-      used_by.order(votes_count: :desc).first(5).map { |lib| { name: lib.name, manager: lib.manager } }
+      used_by.uniq(&:name).sort { |a,b| b.votes_count <=> a.votes_count }.first(5).map(&:name)
+    end
+    add_attribute :used_by_count do
+      used_by.size
     end
     attributesForFaceting [:platform]
     tags do
       [manager.to_s]
     end
-    attributesToIndex [:name, :description, :homepage_uri]
-    customRanking ['desc(score)']
+    attributesToIndex ['unordered(name)', 'unordered(description)', :homepage_uri]
+    customRanking ['desc(score)', 'desc(used_by_count)']
   end
 
   has_many :dependencies, foreign_key: 'source_id', dependent: :destroy
@@ -27,7 +30,7 @@ class Library < ActiveRecord::Base
   as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
 
   def score
-    used_by.count
+    used_by.inject(votes.count) { |sum, lib| sum + lib.votes.count }
   end
 
   def github?

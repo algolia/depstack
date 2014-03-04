@@ -1,8 +1,8 @@
 /* Lumen
  * Bootswatch
- *= require_self
  *= require lumen/loader
  *= require lumen/bootswatch
+ *= require_self
  *= require font-awesome
  *= require welcome
  *= require highlight
@@ -31,3 +31,13 @@ input[type="text"]:focus, input[type="checkbox"]:focus, input[type="url"]:focus,
 .text-large { font-size: 40px; }
 .text-medium { font-size: 20px; }
 .b { font-weight: bold; }
+
+.alert { padding: 5px;}
+.alert-dismissable .close { top: 0px; right: 5px; }
+.alert-top {
+  position: fixed;
+  top: 0px;
+  left: 30%;
+  width: 40%;
+  margin: 0px auto;
+}

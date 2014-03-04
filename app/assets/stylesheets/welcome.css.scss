@@ -32,6 +32,17 @@
       width: 50%;
       margin: 0px auto;
     }
+    .powered-by {
+      font-size: 0.9em;
+      position: absolute;
+      left: 75%;
+      margin-left: -80px;
+      right: 0px;
+      top: 40px;
+      img {
+        height: 1em;
+      }
+    }
     .btn-group {
       position: absolute;
       left: 75%;
@@ -80,6 +91,9 @@
         color: rgb(85, 85, 85);
         text-decoration: none;
       }
+    }
+    .powered-by {
+      top: 70px;
     }
     .btn-group {
       top: 30px;

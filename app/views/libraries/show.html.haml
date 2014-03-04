@@ -32,7 +32,7 @@
           = image_tag u.avatar_url
         .text-center= u.login
 
-- if @library.github?
+- if @library.github? and @library.github_repository
   .row
     .col-lg-12
       %h2 Documentation
