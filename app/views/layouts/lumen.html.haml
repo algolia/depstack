@@ -88,14 +88,16 @@
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
           </div>
           <div class="info">{{{ _highlightResult.info.value }}}</div>
+          {{#used_by?}}
           <div class="dependencies">
             <ul class="list-inline">
               <li>Used by:</li>
-              {{#top_projects}}
-              <li><a href="/projects/{{ user }}/{{ name }}">{{name}}</a></li>
-              {{/top_projects}}
+              {{#used_by}}
+              <li><a href="/libraries/{{ manager }}/{{ name }}">{{name}}</a></li>
+              {{/used_by}}
             </ul>
           </div>
+          {{/used_by?}}
         </div>
 
     = javascript_include_tag "lumen"

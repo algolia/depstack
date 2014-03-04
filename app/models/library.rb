@@ -4,6 +4,9 @@ class Library < ActiveRecord::Base
   include AlgoliaSearch
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
     attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score
+    add_attribute :used_by do
+      used_by.order(votes_count: :desc).first(5).map { |lib| { name: lib.name, manager: lib.manager } }
+    end
     attributesForFaceting [:manager, :platform]
     attributesToIndex [:name, :description, :homepage_uri]
     customRanking ['desc(score)']
@@ -15,7 +18,7 @@ class Library < ActiveRecord::Base
   has_many :requirements, class_name: 'Dependency', foreign_key: 'destination_id'
   has_many :used_by, through: :requirements, source: :source
 
-  has_many :votes
+  has_many :votes, counter_cache: :votes_count
   has_many :users, through: :votes
 
   as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
