@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140228094114) do
+ActiveRecord::Schema.define(version: 20140304021523) do
 
   create_table "dependencies", force: true do |t|
     t.integer "source_id",                 null: false
@@ -35,5 +35,23 @@ ActiveRecord::Schema.define(version: 20140228094114) do
   end
 
   add_index "libraries", ["manager_cd", "name"], name: "index_libraries_on_manager_cd_and_name"
+
+  create_table "users", force: true do |t|
+    t.string   "login",      null: false
+    t.string   "email"
+    t.string   "name"
+    t.string   "avatar_url"
+    t.datetime "created_at", null: false
+  end
+
+  create_table "votes", force: true do |t|
+    t.integer  "user_id",    null: false
+    t.integer  "library_id", null: false
+    t.datetime "created_at", null: false
+  end
+
+  add_index "votes", ["library_id"], name: "index_votes_on_library_id"
+  add_index "votes", ["user_id", "library_id"], name: "index_votes_on_user_id_and_library_id"
+  add_index "votes", ["user_id"], name: "index_votes_on_user_id"
 
 end

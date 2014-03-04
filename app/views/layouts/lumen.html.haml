@@ -14,6 +14,15 @@
 
     .container
       #header{class: ('mini' if !current_page?(root_path))}
+        #login-form.bg-success
+          - if logged_in?
+            = "Hey #{current_user.name}"
+            = "(#{link_to 'Sign out', signout_path})".html_safe
+          - else
+            = link_to '/auth/github' do
+              %i.fa.fa-github
+              Sign in with Github
+
         - if current_page?(root_path)
           .jumbotron
             %h1
@@ -39,9 +48,10 @@
               %span#hits-type All managers
               %span.caret
             %ul.dropdown-menu{role: 'menu'}
-              %li= link_to 'All managers', '#', onclick: 'return toggleManager(this, "all");'
+              %li= link_to 'All managers', '#', onclick: 'return toggleManager(this);'
               %li= link_to 'Rubygems', '#', onclick: 'return toggleManager(this, "rubygems");'
               %li= link_to 'NPM', '#', onclick: 'return toggleManager(this, "npm");'
+              %li= link_to 'Pip', '#', onclick: 'return toggleManager(this, "pip");'
               %li= link_to 'Composer', '#', onclick: 'return toggleManager(this, "composer");'
 
       .row
@@ -72,7 +82,7 @@
       :plain
         <div class="hit">
           <div class="title">
-            <a href="/libraries/{{ name }}">{{{ _highlightResult.name.value }}}</a>
+            <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.name.value }}}</a> ({{ score }})
           </div>
           <div class="link">
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
@@ -109,6 +119,7 @@
         var index = client.initIndex('#{Library.index_name}');
         var mini = false;
         var refinements = {};
+        var manager = null;
 
         var projectTemplate = Hogan.compile($('#project-hit').text());
         var libraryTemplate = Hogan.compile($('#library-hit').text());
@@ -157,10 +168,10 @@
           $hits.html(hits);
         }
 
-        window.toggleManager = function(link, lang) {
+        window.toggleManager = function(link, m) {
           var v = $(link).text();
           $type.text(v);
-          // FIXME lang
+          manager = m;
           search();
           return false;
         };
@@ -193,6 +204,9 @@
             if (refinements[refine]) {
               facetFilters.push(refine);
             }
+          }
+          if (manager) {
+            facetFilters.push('manager:' + manager);
           }
 
           index.search(q, searchCallback, {

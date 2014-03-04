@@ -1,15 +1,34 @@
 .row
   .col-lg-6.col-sm-8
-    %h1= @library.name
+    %h1
+      = @library.name
+      - if logged_in? and !current_user.has_voted?(@library)
+        = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
     - unless @library.homepage_uri.blank?
       %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
     %h2
       %small= @library.description
   .col-lg-3.visible-lg.text-center
     .panel.panel-default
+      .panel-heading <span class="b">#</span> votes
+      .panel-body
+        .text-huge= number_with_delimiter @library.votes.count
+  .col-lg-3.visible-lg.text-center
+    .panel.panel-default
       .panel-heading <span class="b">#</span> libraries using it
       .panel-body
         .text-huge= number_with_delimiter @library.used_by.count
+
+- if @library.users.size > 0
+  .row
+    .col-lg-12
+      %h2 Voters
+  .row
+    - @library.users.each do |u|
+      .col-lg-1.col-md-1.col-sm-1.col-xs-1.voter
+        - if !u.avatar_url.blank?
+          = image_tag u.avatar_url
+        .text-center= u.login
 
 - if @library.github?
   .row

@@ -22,7 +22,7 @@ gem 'hogan_assets'
 gem 'nokogiri'
 gem 'highlight', :require => 'simplabs/highlight'
 gem 'simple_enum'
-
+gem 'omniauth-github'
 gem 'github-markup'
 gem 'posix-spawn'
 gem 'redcarpet'

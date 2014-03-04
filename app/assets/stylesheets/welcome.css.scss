@@ -10,6 +10,21 @@
     box-shadow: none;
   }
 
+  #login-form {
+    position: fixed;
+    top: 0px;
+    right: 20px;
+    color: white;
+    padding: 5px 10px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    z-index: 10000;
+
+    a {
+      color: white;
+    }
+  }
+
   #search-form {
     position: relative;
 
@@ -142,6 +157,12 @@ a.gree:hover {
 
 #social {
   padding-top: 30px;
+}
+
+.voter {
+  img {
+    max-width: 100%;
+  }
 }
 
 #readme {

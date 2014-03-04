@@ -5,7 +5,7 @@
       %em= "#{pluralize library.used_by.count, 'library'} using it"
       %span.label.label-info= library.manager
     %i.fa.fa-code
-    = link_to library.name, library_path(library.name)
+    = link_to library.name, library_path(library.manager, library.name)
     - if dependency
       = " (#{[dependency.environment, dependency.requirement].compact.join(', ')})"
   .panel-body= library.description

@@ -4,4 +4,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   layout 'lumen'
+
+  include SessionsHelper
+
+  protected
+  def authenticate_user!
+    return true if logged_in?
+    redirect_to root_path
+    return false
+  end
 end

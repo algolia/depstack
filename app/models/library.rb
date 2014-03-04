@@ -15,6 +15,9 @@ class Library < ActiveRecord::Base
   has_many :requirements, class_name: 'Dependency', foreign_key: 'destination_id'
   has_many :used_by, through: :requirements, source: :source
 
+  has_many :votes
+  has_many :users, through: :votes
+
   as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
 
   def score
