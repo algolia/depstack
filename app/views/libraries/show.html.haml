@@ -1,9 +1,11 @@
 .row
-  .col-lg-6.col-sm-8
+  .col-lg-12
     %h1
       = @library.name
       - if logged_in? and !current_user.has_voted?(@library)
         = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
+.row
+  .col-lg-6.col-sm-8
     - unless @library.homepage_uri.blank?
       %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
     %h2

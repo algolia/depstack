@@ -87,7 +87,7 @@
           <div class="link">
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
           </div>
-          <div class="info">{{{ _highlightResult.info.value }}}</div>
+          <div class="info">{{{ _highlightResult.description.value }}}</div>
           {{#used_by?}}
           <div class="dependencies">
             <ul class="list-inline">
@@ -113,7 +113,6 @@
         var $content = $('#content');
 
         var LABELS = {
-          "manager": "Manager",
           "platform": "Platform"
         };
 
@@ -207,8 +206,10 @@
               facetFilters.push(refine);
             }
           }
+
+          var tagFilters = [];
           if (manager) {
-            facetFilters.push('manager:' + manager);
+            tagFilters.push(manager);
           }
 
           index.search(q, searchCallback, {
@@ -217,7 +218,8 @@
             maxValuesPerFacet: 20,
             minWordSizefor1Typo: 5,
             minWordSizefor2Typos: 9,
-            facetFilters: facetFilters.join(',')
+            facetFilters: facetFilters.join(','),
+            tagFilters: tagFilters.join(',')
           });
         }
       });

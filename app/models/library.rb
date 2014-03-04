@@ -7,18 +7,21 @@ class Library < ActiveRecord::Base
     add_attribute :used_by do
       used_by.order(votes_count: :desc).first(5).map { |lib| { name: lib.name, manager: lib.manager } }
     end
-    attributesForFaceting [:manager, :platform]
+    attributesForFaceting [:platform]
+    tags do
+      [manager.to_s]
+    end
     attributesToIndex [:name, :description, :homepage_uri]
     customRanking ['desc(score)']
   end
 
-  has_many :dependencies, foreign_key: 'source_id'
+  has_many :dependencies, foreign_key: 'source_id', dependent: :destroy
   has_many :using, through: :dependencies, source: :destination
 
-  has_many :requirements, class_name: 'Dependency', foreign_key: 'destination_id'
+  has_many :requirements, class_name: 'Dependency', foreign_key: 'destination_id', dependent: :destroy
   has_many :used_by, through: :requirements, source: :source
 
-  has_many :votes, counter_cache: :votes_count
+  has_many :votes, counter_cache: :votes_count, dependent: :destroy
   has_many :users, through: :votes
 
   as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
