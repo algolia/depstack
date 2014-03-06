@@ -30,7 +30,7 @@ class Library < ActiveRecord::Base
   as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
 
   def score
-    used_by.inject(votes.count) { |sum, lib| sum + lib.votes.count }
+    used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }
   end
 
   def github?
