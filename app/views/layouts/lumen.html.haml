@@ -58,11 +58,11 @@
               %span#hits-type All managers
               %span.caret
             %ul.dropdown-menu{role: 'menu'}
-              %li= link_to 'All managers', '#', onclick: 'return toggleManager(this);'
-              %li= link_to 'Rubygems', '#', onclick: 'return toggleManager(this, "rubygems");'
-              %li= link_to 'NPM', '#', onclick: 'return toggleManager(this, "npm");'
-              %li= link_to 'Pip', '#', onclick: 'return toggleManager(this, "pip");'
-              %li= link_to 'Composer', '#', onclick: 'return toggleManager(this, "composer");'
+              %li= link_to 'All managers', '#', onclick: 'return toggleManager(this);', rel: 'all'
+              %li= link_to 'Rubygems', '#', onclick: 'return toggleManager(this, "rubygems");', rel: 'rubygems'
+              %li= link_to 'NPM', '#', onclick: 'return toggleManager(this, "npm");', rel: 'npm'
+              %li= link_to 'Pip', '#', onclick: 'return toggleManager(this, "pip");', rel: 'pip'
+              %li= link_to 'Composer', '#', onclick: 'return toggleManager(this, "composer");', rel: 'composer'
 
       .row
         .col-lg-2.col-sm-3.hidden-xs
@@ -154,6 +154,36 @@
 
         var votes = #{(logged_in? ? current_user.votes.map(&:library_id) : []).inspect};
 
+        window.toggleManager = function(link, m) {
+          var v = $(link).text();
+          $type.text(v);
+          manager = m;
+          search();
+          return false;
+        };
+
+        window.toggleRefinenement = function(v) {
+          refinements[v] = !refinements[v];
+          search();
+          return false;
+        };
+
+        if (location.hash && location.hash.indexOf('#!/') === 0) {
+          var parts = location.hash.substring(3).split('&');
+          for (var i = 0; i < parts.length; ++i) {
+            var k = parts[i].slice(0, parts[i].indexOf('='));
+            var v = decodeURIComponent(parts[i].slice(k.length + 1));
+            if (k === 'q') {
+              $q.val(v);
+            } else if (k === 'manager') {
+              toggleManager($('a[rel="' + v + '"]')[0], v);
+            } else if (k === 'facetFilter') {
+              refinements[v] = true;
+            }
+          }
+          search();
+        }
+
         function searchCallback(success, content) {
           if (!success || content.query != $q.val()) {
             return;
@@ -196,22 +226,33 @@
           $hits.html(hits);
         }
 
-        window.toggleManager = function(link, m) {
-          var v = $(link).text();
-          $type.text(v);
-          manager = m;
-          search();
-          return false;
-        };
-
-        window.toggleRefinenement = function(v) {
-          refinements[v] = !refinements[v];
-          search();
-          return false;
-        };
-
         function search() {
           var q = $q.val().trim();
+
+          var facetFilters = [];
+          for (var refine in refinements) {
+            if (refinements[refine]) {
+              facetFilters.push(refine);
+            }
+          }
+
+          var tagFilters = [];
+          if (manager) {
+            tagFilters.push(manager);
+          }
+
+          if (location.hash.indexOf('#!/') == 0 || q) {
+            var params = [];
+            params.push('q=' + encodeURIComponent(q));
+            if (manager) {
+              params.push('manager=' + encodeURIComponent(manager));
+            }
+            for (var i = 0; i < facetFilters.length; ++i) {
+              params.push('facetFilter=' + encodeURIComponent(facetFilters[i]));
+            }
+            location.replace('#!/' + params.join('&'));
+          }
+
           if (q === '') {
             $hits.empty();
             $stats.empty();
@@ -225,18 +266,6 @@
           if (!mini) {
             mini = true;
             $('#header').addClass('mini');
-          }
-
-          var facetFilters = [];
-          for (var refine in refinements) {
-            if (refinements[refine]) {
-              facetFilters.push(refine);
-            }
-          }
-
-          var tagFilters = [];
-          if (manager) {
-            tagFilters.push(manager);
           }
 
           index.search(q, searchCallback, {
