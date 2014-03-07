@@ -44,35 +44,40 @@ puts "Importing Composer"
 page = 1
 loop do
   doc = Nokogiri::HTML(open("https://packagist.org/packages/?page=#{page}").read)
-  (doc / 'h1 a').each do |a|
-    name = a.text()
-    next if name == 'Packagist'
-    begin
-      puts name
-      Library.load!(:composer, name, fast)
-    rescue Exception => e
-      puts e
-    end
-  end
   next_link = (doc / 'nav a').last
   break if next_link.text() != 'Next'
-  page += 1
+  Parallel.each((page..(page + nb_threads)).to_a, in_processes: nb_threads) do |p|
+    doc = Nokogiri::HTML(open("https://packagist.org/packages/?page=#{p}").read)
+    (doc / 'h1 a').each do |a|
+      name = a.text()
+      next if name == 'Packagist'
+      begin
+        puts name
+        Library.load!(:composer, name, fast)
+      rescue Exception => e
+        puts e
+      end
+    end
+  end
+  page += nb_threads
 end
 
 puts "Importing Go"
 page = 1
 loop do
   doc = Nokogiri::HTML(open("http://go-search.org/search?q=&p=#{page}").read)
-  infos = (doc / '.info')
-  break if infos.empty?
-  infos.each do |info|
-    name = (info / 'a')[0].text
-    begin
-      puts name
-      Library.load!(:go, name, fast)
-    rescue Exception => e
-      puts e
+  break if (doc / '.info').empty?
+  Parallel.each((page..(page + nb_threads)).to_a, in_processes: nb_threads) do |p|
+    doc = Nokogiri::HTML(open("http://go-search.org/search?q=&p=#{p}").read)
+    (doc / '.info').each do |info|
+      name = (info / 'a')[0].text
+      begin
+        puts name
+        Library.load!(:go, name, fast)
+      rescue Exception => e
+        puts e
+      end
     end
   end
-  page += 1
+  page += nb_threads
 end
