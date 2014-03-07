@@ -112,8 +112,8 @@ class Library < ActiveRecord::Base
       if json
         library.downloads = json['StarCount']
         library.platform = 'go'
-        library.description = json['Description']
-        library.description = json['Synopsis'] if library.description.blank?
+        library.description = json['Synopsis']
+        library.description = json['Description'] if library.description.blank?
         library.homepage_uri = json['ProjectURL']
         library.load_dependencies! (json['Imports'] || []).map { |v| { name: v } }
       end
