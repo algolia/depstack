@@ -2,7 +2,7 @@ class VotesController < ApplicationController
   before_filter :authenticate_user!
 
   def show
-    @libraries = current_user.votes.order(created_at: :desc).map(&:library)
+    @libraries = current_user.votes.order(created_at: :desc).map(&:library).compact
   end
 
   def toggle
