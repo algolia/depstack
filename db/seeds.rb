@@ -6,6 +6,7 @@ puts "Importing Rubygems"
 `gem list --remote`.split(/\n/).each do |line|
   name = line.split(/\s/).first
   begin
+    puts name
     Library.load!(:rubygems, name, fast)
   rescue Exception => e
     puts e
@@ -17,6 +18,7 @@ JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'].
   name = row['id']
   next if name.blank?
   begin
+    puts name
     Library.load!(:npm, name, fast)
   rescue Exception => e
     puts e
@@ -27,6 +29,7 @@ puts "Importing PIP"
 open("https://pypi.python.org/pypi?:action=index").read.scan(/href="\/pypi\/([^\/]+)\/[^"]+/).each do |s|
   name = s.first
   begin
+    puts name
     Library.load!(:pip, name, fast)
   rescue Exception => e
     puts e
@@ -41,6 +44,7 @@ loop do
     name = a.text()
     next if name == 'Packagist'
     begin
+      puts name
       Library.load!(:composer, name, fast)
     rescue Exception => e
       puts e

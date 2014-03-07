@@ -50,7 +50,6 @@ class Library < ActiveRecord::Base
   def self.load!(manager, name, fast = false)
     manager_cd = Library.managers[manager.to_s]
     library = Library.find_or_initialize_by(manager_cd: manager_cd, name: name)
-    puts name
     return library if !library.new_record? && fast
     case manager_cd
     when Library.rubygems
