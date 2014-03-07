@@ -86,7 +86,14 @@
     %footer
       .container
         .pull-left
-          = link_to "Feature or pull-request?", "http://github.com/algolia/depstack", class: 'text-muted'
+          %ul.list-inline
+            %li= link_to "Feature or pull-request?", "http://github.com/algolia/depstack", class: 'text-muted'
+            %li.text-muted.hidden-xs
+              Theme by
+              = link_to "Bootswatch", "http://bootswatch.com/"
+            %li.text-muted.hidden-xs
+              Icons from
+              = link_to "Font Awesome", "http://fontawesome.io/"
         .pull-right
           %i.fa.fa-code
           with
