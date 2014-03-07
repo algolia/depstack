@@ -113,7 +113,7 @@
             <a href="/vote/{{ objectID }}"><i class="fa fa-chevron-circle-up text-success"></i></a>
             {{/voted}}
             {{ score }}
-            <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.name.value }}}</a>
+            <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.short_name.value }}}</a>
             <span class="label label-info">{{ manager }}</span>
           </div>
           <div class="link">
@@ -333,7 +333,7 @@
             minWordSizefor2Typos: 9,
             facetFilters: facetFilters.join(','),
             tagFilters: tagFilters.join(','),
-            attributesToRetrieve: ['manager', 'name', 'score', 'homepage_uri', 'used_by', 'used_by_count', 'description:100'],
+            attributesToRetrieve: ['manager', 'short_name', 'name', 'score', 'homepage_uri', 'used_by', 'used_by_count', 'description:100'],
             attributesToSnippet: ['description:100']
           });
         }

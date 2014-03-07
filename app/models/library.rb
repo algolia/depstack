@@ -3,7 +3,7 @@ require 'open-uri'
 class Library < ActiveRecord::Base
   include AlgoliaSearch
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
-    add_attribute :name do
+    add_attribute :short_name do
       case manager_cd
       when Library.go
         p = name.split('/')
@@ -12,7 +12,7 @@ class Library < ActiveRecord::Base
         name
       end
     end
-    attribute :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
+    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
     add_attribute :used_by do
       used_by.uniq(&:name).sort { |a,b| b.votes_count <=> a.votes_count }.first(5).map(&:name)
     end
@@ -23,7 +23,7 @@ class Library < ActiveRecord::Base
     tags do
       [manager.to_s]
     end
-    attributesToIndex ['unordered(name)', 'unordered(description)', :homepage_uri]
+    attributesToIndex ['unordered(short_name)', 'unordered(description)', :homepage_uri]
     customRanking ['desc(score)', 'desc(used_by_count)']
   end
 
