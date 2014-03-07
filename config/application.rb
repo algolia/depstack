@@ -32,6 +32,8 @@ module Depstack
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     
+    config.assets.precompile += %w(lumen.js lumen.css)
+
     config.middleware.use OmniAuth::Builder do
       provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET']
     end
