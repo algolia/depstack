@@ -1,6 +1,10 @@
 class VotesController < ApplicationController
   before_filter :authenticate_user!
 
+  def show
+    @libraries = current_user.votes.order(created_at: :desc).map(&:library)
+  end
+
   def toggle
     vote = current_user.votes.find_by(library_id: params[:id])
     if vote.nil?

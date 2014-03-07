@@ -1,0 +1,10 @@
+- content_for :title, 'My votes'
+
+.row
+  .col-lg-12
+    %h1 My Votes
+
+- @libraries.each do |lib|
+  .row
+    .col-lg-12
+      = render partial: '/libraries/summary', object: lib

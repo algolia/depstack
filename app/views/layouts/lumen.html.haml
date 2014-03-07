@@ -25,7 +25,8 @@
       #header{class: ('mini' if !current_page?(root_path))}
         #login-form.bg-success
           - if logged_in?
-            = "Hey #{current_user.name}"
+            Hey
+            = link_to current_user.name, votes_path
             = "(#{link_to 'Sign out', signout_path})".html_safe
           - else
             = link_to '/auth/github' do
