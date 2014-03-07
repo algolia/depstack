@@ -55,6 +55,7 @@ GEM
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
+    descendants_tracker (0.0.3)
     diff-lcs (1.2.5)
     email_spec (1.5.0)
       launchy (~> 2.1)
@@ -76,6 +77,14 @@ GEM
       sass (~> 3.2)
     gemnasium-parser (0.1.9)
     github-markup (1.0.3)
+    github_api (0.11.1)
+      addressable (~> 2.3)
+      descendants_tracker (~> 0.0.1)
+      faraday (~> 0.8, < 0.10)
+      hashie (>= 1.2)
+      multi_json (>= 1.7.5, < 2.0)
+      nokogiri (~> 1.6.0)
+      oauth2
     haml (4.1.0.beta.1)
       tilt
     haml-rails (0.5.3)
@@ -244,6 +253,7 @@ DEPENDENCIES
   font-awesome-sass
   gemnasium-parser
   github-markup
+  github_api
   haml-rails
   highlight
   hogan_assets

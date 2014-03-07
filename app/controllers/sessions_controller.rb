@@ -3,8 +3,14 @@ class SessionsController < ApplicationController
   def create
     auth = request.env["omniauth.auth"]
     h = auth["extra"]["raw_info"]
-    session[:user_id] = User.find_or_create_by!(id: h['id'], login: h['login'], email: h['email'], avatar_url: h['avatar_url'], name: h['name']).id
-    redirect_to root_url
+    u = User.find_or_initialize_by(id: h['id'])
+    u.login = h['login']
+    u.email = h['email']
+    u.avatar_url = h['avatar_url']
+    u.name =  h['name']
+    u.save!
+    session[:user_id] = u.id
+    redirect_to :back
   end
 
   def destroy

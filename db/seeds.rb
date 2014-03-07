@@ -11,6 +11,7 @@ end
 puts "Importing NPM"
 JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'].each do |row|
   name = row['id']
+  next if name.blank?
   Library.load!(:npm, name, fast)
 end
 

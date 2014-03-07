@@ -2,9 +2,13 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@import "bootstrap/variables";
+
 #header {
   .jumbotron {
     margin-top: 30px;
+    margin-bottom: 10px;
+    padding-bottom: 0px;
     border: none;
     background: none;
     box-shadow: none;
@@ -60,6 +64,22 @@
 
     .logo {
       display: none;
+    }
+  }
+}
+
+@media(max-width: $screen-xs-max) {
+  .jumbotron {
+    margin: 0px !important;
+  }
+  #search-form {
+    .form-group {
+      width: 100% !important;
+    }
+    .btn-group, .powered-by {
+      left: auto !important;
+      right: 0px !important;
+      margin-left: 0px !important;
     }
   }
 }
@@ -163,6 +183,10 @@ a.gree:hover {
       font-weight: bold;
     }
   }
+}
+
+#pagination {
+  text-align: center;
 }
 
 #content {

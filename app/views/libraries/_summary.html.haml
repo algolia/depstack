@@ -1,11 +1,20 @@
-- library, dependency = summary.is_a?(Library) ? [summary, nil] : [summary.library, summary]
+- library, dependency = summary.is_a?(Library) ? [summary, nil] : [summary.source, summary]
 .panel.panel-default
   .panel-heading
     .pull-right
-      %em= "#{pluralize library.used_by.count, 'library'} using it"
-      %span.label.label-info= library.manager
-    %i.fa.fa-code
+      - if dependency
+        - unless dependency.requirement.blank?
+          %code= dependency.requirement
+        - unless dependency.environment.blank?
+          %span.label.label-info= dependency.environment
+      - else
+        %em= "#{pluralize library.used_by.count, 'library'} using it"
+        %span.label.label-info= library.manager
+    - if @votes.include?(library.id)
+      %i.fa.fa-star.text-warning
+    - else
+      = link_to vote_path(library) do
+        %i.fa.fa-chevron-circle-up.text-success
+    (#{number_with_delimiter library.votes_count})
     = link_to library.name, library_path(library.manager, library.name)
-    - if dependency
-      = " (#{[dependency.environment, dependency.requirement].compact.join(', ')})"
   .panel-body= library.description

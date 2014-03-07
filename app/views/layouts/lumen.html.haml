@@ -4,7 +4,9 @@
     %meta(charset="utf-8")
     %meta(http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1")
     %meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    %title= content_for?(:title) ? yield(:title) : "depstack"
+    %title
+      = content_for?(:title) ? yield(:title) : ''
+      \- Depstack
     = csrf_meta_tags
     /[if lt IE 9]
       = javascript_include_tag "http://html5shim.googlecode.com/svn/trunk/html5.js"
@@ -34,12 +36,12 @@
             %h1
               %i.fa.fa-bars
               Depstack
-            %p Find libraries used by famous open-source projects
+            %p Find & vote for popular libraries
             #social.hidden-xs.text-center
               %iframe{id: "gh-fork", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=fork", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "53px", height: "20px"}
               %iframe{id: "gh-start", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=watch&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "110px", height: "20px"}
               %a.twitter-follow-button{href: "https://twitter.com/algolia", "data-show-count" => "false", "data-show-screen-name" => "true"}Follow @algolia
-              %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "algolia", 'data-text' => 'Find libraries used by famous open-source projects by @algolia'} Tweet
+              %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "algolia", 'data-text' => 'Find & vote for popular libraries'} Tweet
 
         #search-form.form-horizontal
           %h1.logo
@@ -51,7 +53,7 @@
             %span.glyphicon.glyphicon-search.form-control-feedback
           .powered-by
             by
-            = link_to 'http://www.algolia.com' do
+            = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=searchbar&utm_campaign=depstack' do
               %img{src: '//www.algolia.com/assets/algolia128x40.png'}
           .btn-group
             %button{type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle' => 'dropdown'}
@@ -70,6 +72,7 @@
         .col-lg-8.col-sm-9
           #stats
           #hits
+          #pagination
           #noresults{style: 'display: none'}
             %h3.text-center No results for query "<span class="q"></span>"
 
@@ -85,7 +88,7 @@
           with
           %i.fa.fa-heart
           by
-          = link_to 'http://www.algolia.com' do
+          = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=footer&utm_campaign=depstack' do
             %img{src: '//www.algolia.com/assets/algolia128x40.png'}
 
     %script#library-hit{type: 'text/template'}
@@ -124,12 +127,14 @@
     = javascript_include_tag "lumen"
     :javascript
       !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
       $(document).ready(function() {
         var $q = $('#q');
         var $hits = $('#hits');
         var $type = $('#hits-type');
         var $stats = $('#stats');
         var $facets = $('#facets');
+        var $pagination = $('#pagination');
         var $noresults = $('#noresults');
         var $content = $('#content');
 
@@ -142,17 +147,24 @@
         var mini = false;
         var refinements = {};
         var manager = null;
+        var page = 0;
 
         var projectTemplate = Hogan.compile($('#project-hit').text());
         var libraryTemplate = Hogan.compile($('#library-hit').text());
         var template = libraryTemplate;
 
+        var lastQuery = null;
         $q.on('keyup change', function() {
-          refinements = {};
-          search();
+          if (lastQuery != $q.val()) {
+            lastQuery = $q.val();
+            console.log(lastQuery);
+            refinements = {};
+            page = 0;
+            search();
+          }
         });
 
-        var votes = #{(logged_in? ? current_user.votes.map(&:library_id) : []).inspect};
+        var votes = #{@votes.inspect};
 
         window.toggleManager = function(link, m) {
           var v = $(link).text();
@@ -168,6 +180,13 @@
           return false;
         };
 
+        window.gotoPage = function(p) {
+          page = p;
+          window.scrollTo(0, 0);
+          search();
+          return false;
+        }
+
         if (location.hash && location.hash.indexOf('#!/') === 0) {
           var parts = location.hash.substring(3).split('&');
           for (var i = 0; i < parts.length; ++i) {
@@ -179,18 +198,20 @@
               toggleManager($('a[rel="' + v + '"]')[0], v);
             } else if (k === 'facetFilter') {
               refinements[v] = true;
+            } else if (k === 'page') {
+              page = parseInt(v);
             }
           }
           search();
         }
 
         function searchCallback(success, content) {
-          if (!success || content.query != $q.val()) {
+          if (!success || content.query != $q.val().trim()) {
             return;
           }
 
           if (content.hits.length > 0) {
-            $stats.html('Results <strong>1 - <span class="">' + content.hits.length + '</span></strong> of <strong>' + content.nbHits + '</strong> in <strong>' + content.processingTimeMS + ' ms</strong>');
+            $stats.html('Results <strong>' + (content.page * content.hitsPerPage + 1) + ' - <span class="">' + (content.page * content.hitsPerPage + content.hits.length) + '</span></strong> of <strong>' + content.nbHits.number_with_delimiter() + '</strong> in <strong>' + content.processingTimeMS + ' ms</strong>');
             $noresults.hide();
           } else {
             $stats.html('');
@@ -208,7 +229,7 @@
             for (var i = 0; i < values.length; ++i) {
               var v = facet + ':' + values[i].key;
               var clazz = refinements[v] ? 'refined' : '';
-              facets += '<li class="' + clazz + '"><a href="javascript:toggleRefinenement(\'' + v + '\')">' + values[i].key + '</a> (' + values[i].count + ')</li>';
+              facets += '<li class="' + clazz + '"><a href="javascript:toggleRefinenement(\'' + v + '\')">' + values[i].key + '</a> (' + values[i].count.number_with_delimiter() + ')</li>';
             }
             facets += '</ul>';
           }
@@ -218,12 +239,22 @@
           for (var i = 0; i < content.hits.length; ++i) {
             var hit = content.hits[i];
             if (hit.used_by_count > hit.used_by.length) {
-              hit['others'] = hit.used_by_count - hit.used_by.length;
+              hit['others'] = (hit.used_by_count - hit.used_by.length).number_with_delimiter();
             }
             hit['voted'] = $.inArray(parseInt(hit.objectID), votes) > -1;
             hits += template.render(hit);
           }
           $hits.html(hits);
+
+          var pagination = '<ul class="list-inline">';
+          if (content.page > 0) {
+            pagination += '<li><a href="javascript:gotoPage(' + (content.page - 1) + ')">« Previous page</a></li>';
+          }
+          if (content.page + 1 < content.nbPages) {
+            pagination += '<li><a href="javascript:gotoPage(' + (content.page + 1) + ')">Next page »</a></li>';
+          }
+          pagination += '</ul>';
+          $pagination.html(pagination);
         }
 
         function search() {
@@ -250,6 +281,9 @@
             for (var i = 0; i < facetFilters.length; ++i) {
               params.push('facetFilter=' + encodeURIComponent(facetFilters[i]));
             }
+            if (page > 0) {
+              params.push('page=' + page);
+            }
             location.replace('#!/' + params.join('&'));
           }
 
@@ -269,6 +303,7 @@
           }
 
           index.search(q, searchCallback, {
+            page: page,
             hitsPerPage: 10,
             facets: '*',
             maxValuesPerFacet: 20,
@@ -280,3 +315,16 @@
         }
       });
     = yield(:page_javascript) if content_for?(:page_javascript)
+    :javascript
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-32446386-1']);
+      _gaq.push(['_setDomainName', '#{request.host}']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview', '/depstack#{request.path if request.path != '/'}']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+

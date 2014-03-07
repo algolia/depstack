@@ -28,6 +28,7 @@ gem 'posix-spawn'
 gem 'redcarpet'
 gem 'RedCloth'
 gem 'rdoc', '~> 3.6.1'
+gem 'github_api'
 
 group :development do
   gem 'better_errors'

@@ -1,8 +1,10 @@
+- content_for :title, @library.platform ? "#{@library.platform.capitalize} library #{@library.name}" : @library.name
+
 .row
   .col-lg-12
     %h1
       = @library.name
-      - if logged_in? and !current_user.has_voted?(@library)
+      - if !logged_in? or !current_user.has_voted?(@library)
         = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
 .row
   .col-lg-6.col-sm-8
@@ -21,18 +23,34 @@
       .panel-body
         .text-huge= number_with_delimiter @library.used_by.count
 
-- if @library.users.size > 0
+- if (count = @library.users.count) > 0
   .row
     .col-lg-12
       %h2 Voters
   .row
-    - @library.users.each do |u|
+    - users = @library.users.first(22)
+    - users.each_with_index do |u, i|
       .col-lg-1.col-md-1.col-sm-1.col-xs-1.voter
-        - if !u.avatar_url.blank?
-          = image_tag u.avatar_url
-        .text-center= u.login
+        = link_to "https://github.com/#{u.login}" do
+          - if !u.avatar_url.blank?
+            = image_tag u.avatar_url
+          .text-center= u.login
+      - if (i + 1) % 12 == 0
+        </div><div class="row">
+    - if users.size < count
+      .col-lg-2.col-md-2.col-sm-2.col-xs-2
+        .spacer30
+        and #{count - users.size} others...
 
-- if @library.github? and @library.github_repository
+- if @library.requirements.count > 0
+  .row
+    .col-lg-12
+      %h2 Popular libraries using it
+  .row
+    .col-lg-12
+      = render partial: '/libraries/summary',  collection: @library.top_requirements(10)
+
+- if @library.github? and @library.github_repository and false
   .row
     .col-lg-12
       %h2 Documentation

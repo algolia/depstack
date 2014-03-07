@@ -40,4 +40,5 @@ input[type="text"]:focus, input[type="checkbox"]:focus, input[type="url"]:focus,
   left: 30%;
   width: 40%;
   margin: 0px auto;
+  z-index: 1000;
 }
