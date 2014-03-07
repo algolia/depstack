@@ -3,7 +3,16 @@ require 'open-uri'
 class Library < ActiveRecord::Base
   include AlgoliaSearch
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
-    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
+    add_attribute :name do
+      case manager_cd
+      when Library.go
+        p = name.split('/')
+        (p.length >= 3 ? p[2..-1] : p).join('/')
+      else
+        name
+      end
+    end
+    attribute :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
     add_attribute :used_by do
       used_by.uniq(&:name).sort { |a,b| b.votes_count <=> a.votes_count }.first(5).map(&:name)
     end
