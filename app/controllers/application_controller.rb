@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_filter :setup_votes
+  around_filter :back_rescue
 
   layout 'lumen'
 
@@ -18,5 +19,13 @@ class ApplicationController < ActionController::Base
 
   def setup_votes
     @votes = logged_in? ? current_user.votes.map(&:library_id) : []
+  end
+
+  def back_rescue
+    begin
+      yield
+    rescue ActionController::RedirectBackError
+      redirect_to root_path
+    end
   end
 end
