@@ -5,20 +5,32 @@ fast = !ENV['fast'].nil?
 puts "Importing Rubygems"
 `gem list --remote`.split(/\n/).each do |line|
   name = line.split(/\s/).first
-  Library.load!(:rubygems, name, fast)
+  begin
+    Library.load!(:rubygems, name, fast)
+  rescue Exception => e
+    puts e
+  end
 end
 
 puts "Importing NPM"
 JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'].each do |row|
   name = row['id']
   next if name.blank?
-  Library.load!(:npm, name, fast)
+  begin
+    Library.load!(:npm, name, fast)
+  rescue Exception => e
+    puts e
+  end
 end
 
 puts "Importing PIP"
 open("https://pypi.python.org/pypi?:action=index").read.scan(/href="\/pypi\/([^\/]+)\/[^"]+/).each do |s|
   name = s.first
-  Library.load!(:pip, name, fast)
+  begin
+    Library.load!(:pip, name, fast)
+  rescue Exception => e
+    puts e
+  end
 end
 
 puts "Importing Composer"
@@ -28,7 +40,11 @@ loop do
   (doc / 'h1 a').each do |a|
     name = a.text()
     next if name == 'Packagist'
-    Library.load!(:composer, name, fast)
+    begin
+      Library.load!(:composer, name, fast)
+    rescue Exception => e
+      puts e
+    end
   end
   next_link = (doc / 'nav a').last
   break if next_link.text() != 'Next'
