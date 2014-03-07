@@ -335,6 +335,27 @@
       });
     = yield(:page_javascript) if content_for?(:page_javascript)
     :javascript
+      console.log(
+        "Built With:\n" +
+        "\n" +
+        "                      oooo                                        oooo     oo                \n" +
+        "        ooooo         oooo                                       ooooo   ooooo               \n" +
+        "       ooooooo        oooo                         oxxxxxxo      ooooo     oo                \n" +
+        "      ooooooooo       oooo          ooooo     ooo  oooooooo      ooooo              oooooo   \n" +
+        "     oooooooooo       oooo     ooooooooooooo oxxxooxxxxxxxxoo    ooooo    oooo    ooooooooooo\n" +
+        "    ooooo  ooooo      oooo    oooooo    oooo  oxxxooo  oooxxxoo  ooooo    oooo           oooo\n" +
+        "   ooooo    ooooo     oooo   ooooo      oooo  oxxoo   oxxxxoxxxo ooooo    oooo           oooo\n" +
+        "   ooooooooooooooo    oooo   ooooo      oooo  xxxo    oooo  xxxo ooooo    oooo    ooooooooooo\n" +
+        "  ooooooooooooooooo   oooo   ooooo      oooo  oxxo         oxxxo ooooo    oooo  oooooo   oooo\n" +
+        " ooooo         oooo   oooo    oooooo   ooooo  ooxxoo      ooxxo  ooooo    oooo  ooooo     ooo\n" +
+        "ooooo          ooooo  oooooo   ooooooooooooo    oxxxoooooxxxoo    oooooo  oooo   oooooooooooo\n" +
+        "oooo            oooo   ooooo           ooooo      oooooooooo       ooooo  oooo     oooooooooo\n" +
+        "                               oo      ooooo                                                 \n" +
+        "                              ooooooooooooo                                                  \n" +
+        "\n" +
+        "                      POWERFUL REALTIME SEARCH API BUILT FOR DEVELOPERS\n" +
+        "                               http://www.algolia.com/console"
+      );
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-32446386-1']);
       _gaq.push(['_setDomainName', '#{request.host}']);
