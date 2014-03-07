@@ -8,7 +8,7 @@
         - unless dependency.environment.blank?
           %span.label.label-info= dependency.environment
       - else
-        %em= "#{pluralize library.used_by.count, 'library'} using it"
+        %em= "#{pluralize number_with_delimiter(library.used_by.count), 'library'} using it"
         %span.label.label-info= library.manager
     - if @votes.include?(library.id)
       %i.fa.fa-star.text-warning
