@@ -54,3 +54,21 @@ loop do
   break if next_link.text() != 'Next'
   page += 1
 end
+
+puts "Importing Go"
+page = 1
+loop do
+  doc = Nokogiri::HTML(open("http://go-search.org/search?q=&p=#{page}").read)
+  infos = (doc / '.info')
+  break if infos.empty?
+  infos.each do |info|
+    name = (info / 'a')[0].text
+    begin
+      puts name
+      Library.load!(:go, name, fast)
+    rescue Exception => e
+      puts e
+    end
+  end
+  page += 1
+end

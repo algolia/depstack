@@ -27,7 +27,7 @@ class Library < ActiveRecord::Base
   has_many :votes, dependent: :destroy
   has_many :users, through: :votes
 
-  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip]
+  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go]
 
   def score
     used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }
@@ -106,6 +106,16 @@ class Library < ActiveRecord::Base
         # TODO: The metadata available for packages on PyPI does not include
         #       information about the dependencies.
         # library.load_dependencies!
+      end
+    when Library.go
+      json = JSON.parse(open("http://go-search.org/api?action=package&id=#{CGI.escape name}").read) rescue nil
+      if json
+        library.downloads = json['StarCount']
+        library.platform = 'go'
+        library.description = json['Description']
+        library.description = json['Synopsis'] if library.description.blank?
+        library.homepage_uri = json['ProjectURL']
+        library.load_dependencies! (json['Imports'] || []).map { |v| { name: v } }
       end
     else
       raise "Unknown manager: #{manager}"

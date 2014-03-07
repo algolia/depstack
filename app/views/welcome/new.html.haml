@@ -7,6 +7,10 @@
       = number_with_delimiter Library.where(manager_cd: Library.rubygems).count
       libraries
     %li
+      %strong Go:
+      = number_with_delimiter Library.where(manager_cd: Library.go).count
+      libraries
+    %li
       %strong NPM: 
       = number_with_delimiter Library.where(manager_cd: Library.npm).count
       libraries
