@@ -76,7 +76,9 @@
           #hits
           #pagination
           #noresults{style: 'display: none'}
-            %h3.text-center No results for query "<span class="q"></span>"
+            %h3.text-center No results for query <code id="no_results_q"></code> and <code id="no_results_filters"></code>
+            .spacer50
+            %h4.text-center.text-muted Something missing? Feature or pull-request? We're on <a href="http://github.com/algolia/depstack"><i class="fa fa-github"></i> Github</a>!
 
       #content
         = yield
@@ -159,7 +161,6 @@
         $q.on('keyup change', function() {
           if (lastQuery != $q.val()) {
             lastQuery = $q.val();
-            console.log(lastQuery);
             refinements = {};
             page = 0;
             search();
@@ -299,11 +300,17 @@
             return;
           }
           $content.hide();
-          $('.q').text(q);
           if (!mini) {
             mini = true;
             $('#header').addClass('mini');
           }
+
+          $('#no_results_q').text(q);
+          var filters = $.merge($.merge([], tagFilters), facetFilters).join(' + ');
+          if (!filters) {
+            filters = 'no refinements';
+          }
+          $('#no_results_filters').text(filters);
 
           index.search(q, searchCallback, {
             page: page,
