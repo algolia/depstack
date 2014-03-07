@@ -1,9 +1,11 @@
 require 'open-uri'
 
+nb_threads = Rails.env.production? ? 16 : 1
 fast = !ENV['fast'].nil?
 
 puts "Importing Rubygems"
-`gem list --remote`.split(/\n/).each do |line|
+Parallel.each(`gem list --remote`.split(/\n/), in_processes: nb_threads) do |line|
+  @reconnected ||= Library.connection.reconnect! || true
   name = line.split(/\s/).first
   begin
     puts name
@@ -14,7 +16,8 @@ puts "Importing Rubygems"
 end
 
 puts "Importing NPM"
-JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'].each do |row|
+Parallel.each(JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'], in_processes: nb_threads) do |row|
+  @reconnected ||= Library.connection.reconnect! || true
   name = row['id']
   next if name.blank?
   begin
@@ -26,7 +29,8 @@ JSON.parse(open('http://isaacs.iriscouch.com/registry/_all_docs').read)['rows'].
 end
 
 puts "Importing PIP"
-open("https://pypi.python.org/pypi?:action=index").read.scan(/href="\/pypi\/([^\/]+)\/[^"]+/).each do |s|
+Parallel.each(open("https://pypi.python.org/pypi?:action=index").read.scan(/href="\/pypi\/([^\/]+)\/[^"]+/), in_processes: nb_threads) do |s|
+  @reconnected ||= Library.connection.reconnect! || true
   name = s.first
   begin
     puts name
