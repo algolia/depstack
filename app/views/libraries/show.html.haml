@@ -1,27 +1,27 @@
 - content_for :title, @library.platform ? "#{@library.platform.capitalize} library #{@library.name}" : @library.name
 
-.row
-  .col-lg-12
-    %h1
-      = @library.name
-      - if !logged_in? or !current_user.has_voted?(@library)
-        = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
-.row
-  .col-lg-6.col-sm-8
-    - unless @library.homepage_uri.blank?
-      %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
-    %h2
-      %small= @library.description
-  .col-lg-3.visible-lg.text-center
-    .panel.panel-default
-      .panel-heading <span class="b">#</span> votes
-      .panel-body
-        .text-huge= number_with_delimiter @library.votes.count
-  .col-lg-3.visible-lg.text-center
-    .panel.panel-default
-      .panel-heading <span class="b">#</span> libraries using it
-      .panel-body
-        .text-huge= number_with_delimiter @library.used_by.count
+%article
+  .row
+    .col-lg-12
+      %h1
+        = @library.name
+        - if !logged_in? or !current_user.has_voted?(@library)
+          = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
+  .row
+    .col-lg-6.col-sm-8
+      - unless @library.homepage_uri.blank?
+        %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
+      %p.text-muted.h3= @library.description
+    .col-lg-3.visible-lg.text-center
+      .panel.panel-default
+        .panel-heading <span class="b">#</span> votes
+        .panel-body
+          .text-huge= number_with_delimiter @library.votes.count
+    .col-lg-3.visible-lg.text-center
+      .panel.panel-default
+        .panel-heading <span class="b">#</span> libraries using it
+        .panel-body
+          .text-huge= number_with_delimiter @library.used_by.count
 
 - if (count = @library.users.count) > 0
   .row
