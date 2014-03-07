@@ -20,7 +20,12 @@ Installation
 ```sh
 bundle install --without production
 bundle exec rake db:migrate
-bundle exec rake db:seed
+bundle exec rake db:seed # TAKES SEVERAL DAYS (Hit Ctrl+C after a few minutes)
 bundle exec rails server [-p PORT]
 open http://localhost:3000
 ```
+
+Contribution
+-------------
+
+Want to add a new packages manager? Check out how we added Go: [e92db88687](https://github.com/algolia/depstack/commit/e92db88687089769f2d45189a2391f963e2a9de1)
