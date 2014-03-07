@@ -112,7 +112,7 @@
           <div class="link">
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
           </div>
-          <div class="info">{{{ _highlightResult.description.value }}}</div>
+          <div class="info">{{{ _snippetResult.description.value }}}</div>
           {{#used_by_count}}
           <div class="dependencies">
             <ul class="list-inline">
@@ -320,7 +320,9 @@
             minWordSizefor1Typo: 5,
             minWordSizefor2Typos: 9,
             facetFilters: facetFilters.join(','),
-            tagFilters: tagFilters.join(',')
+            tagFilters: tagFilters.join(','),
+            attributesToRetrieve: ['manager', 'name', 'score', 'homepage_uri', 'used_by', 'used_by_count', 'description:100'],
+            attributesToSnippet: ['description:100']
           });
         }
       });
