@@ -9,6 +9,7 @@ class SessionsController < ApplicationController
     u.avatar_url = h['avatar_url']
     u.name =  h['name']
     u.save!
+    hipchat_notify! "#{u.email} signed in", notify: true, color: :yellow
     session[:user_id] = u.id
     redirect_to :back
   end
