@@ -112,7 +112,7 @@ doc.search('.section').first.search('.section').each do |lib|
       dep_data = dep.split(/ +/, 2)
       dependency_library = Library.find_or_initialize_by(manager_cd: Library.managers["julia"], name: dep_data[0])
       dependency_library.save! #For missing lib
-      library.dependencies.push(Dependency.new(source_id: library.id, destination_id: dependency_library.id, environment: "", requirement: dep_data[1]))
+      library.dependencies.create(destination_id: dependency_library.id, environment: nil, requirement: dep_data[1]) rescue nil
     end
   end
   library.save!
