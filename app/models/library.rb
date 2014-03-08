@@ -31,6 +31,8 @@ class Library < ActiveRecord::Base
         'Node.js'
       when 'java'
         'Java'
+      when 'julia'
+        'Julia'
       else
         nil
       end
@@ -59,7 +61,7 @@ class Library < ActiveRecord::Base
   has_many :votes, dependent: :destroy
   has_many :users, through: :votes
 
-  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go]
+  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go, :julia]
 
   def score
     used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }

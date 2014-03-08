@@ -22,6 +22,11 @@
       %strong Composer:
       = number_with_delimiter Library.where(manager_cd: Library.composer).count
       libraries
+    %li
+      %strong Julia:
+      = number_with_delimiter Library.where(manager_cd: Library.julia).count
+      libraries
+
 
 .row
   - lasts = Vote.last(3).map(&:library)
