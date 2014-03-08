@@ -15,14 +15,34 @@ class Library < ActiveRecord::Base
         name
       end
     end
-    attribute :name, :description, :downloads, :manager, :platform, :homepage_uri, :repository_uri, :score, :votes_count
+    add_attribute :language do
+      case platform
+      when "ruby", "jruby"
+        'Ruby'
+      when 'go'
+        'Go'
+      when 'python'
+        'Python'
+      when 'php'
+        'PHP'
+      when 'js'
+        'JavaScript'
+      when 'node'
+        'Node.js'
+      when 'java'
+        'Java'
+      else
+        nil
+      end
+    end
+    attribute :name, :description, :downloads, :manager, :homepage_uri, :repository_uri, :score, :votes_count
     add_attribute :used_by do
       used_by.uniq(&:name).sort { |a,b| b.votes_count <=> a.votes_count }.first(5).map(&:name)
     end
     add_attribute :used_by_count do
       used_by.size
     end
-    attributesForFaceting [:platform]
+    attributesForFaceting [:language]
     tags do
       [manager.to_s]
     end
