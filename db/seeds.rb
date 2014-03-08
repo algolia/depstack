@@ -47,6 +47,7 @@ loop do
   next_link = (doc / 'nav a').last
   break if next_link.text() != 'Next'
   Parallel.each((page..(page + nb_threads)).to_a, in_processes: nb_threads) do |p|
+    @reconnected ||= Library.connection.reconnect! || true
     doc = Nokogiri::HTML(open("https://packagist.org/packages/?page=#{p}").read)
     (doc / 'h1 a').each do |a|
       name = a.text()
@@ -68,6 +69,7 @@ loop do
   doc = Nokogiri::HTML(open("http://go-search.org/search?q=&p=#{page}").read)
   break if (doc / '.info').empty?
   Parallel.each((page..(page + nb_threads)).to_a, in_processes: nb_threads) do |p|
+    @reconnected ||= Library.connection.reconnect! || true
     doc = Nokogiri::HTML(open("http://go-search.org/search?q=&p=#{p}").read)
     (doc / '.info').each do |info|
       name = (info / 'a')[0].text
