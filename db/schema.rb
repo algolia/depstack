@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140307192813) do
+ActiveRecord::Schema.define(version: 20140308032302) do
 
   create_table "dependencies", force: true do |t|
     t.integer "source_id",                 null: false
     t.integer "destination_id",            null: false
     t.integer "environment_cd"
-    t.string  "requirement",    limit: 16
+    t.string  "requirement",    limit: 32
   end
 
   add_index "dependencies", ["destination_id"], name: "index_dependencies_on_destination_id"
