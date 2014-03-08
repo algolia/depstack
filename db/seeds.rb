@@ -118,6 +118,46 @@ doc.search('.section').first.search('.section').each do |lib|
   library.save!
 end
 
+puts "Importing Maven libraries"
+def extract_pom(doc)
+  name = doc.xpath("//project//groupid").text + doc.xpath("//project//artifactid").text
+  p name
+  library = Library.find_or_initialize_by(manager_cd: Library.managers["maven"], name: name)
+  library.description = doc.xpath("//project//description").text rescue nil
+  library.repository_uri = doc.xpath("//project//scm//url").text rescue nil
+  library.downloads = 0
+  library.platform = "java"
+  library.dependencies = []
+  # Dependencies
+  doc.search("dependency").each do |dep|
+    name =  dep.xpath(".//groupid").text + dep.xpath(".//artifactid").text
+    dependency = Library.find_or_initialize_by(manager_cd: Library.managers["maven"], name: name)
+    dependency.save! #For missing lib
+    library.dependencies.create(destination_id: dependency.id, environnment: dep.xpath(".//scope") ? dep.xpath(".//scope").text : nil, requirement: dep.xpath(".//version").text) rescue nil #TODO parse properties
+  end
+  library.save!
+end
+
+def parse_maven(json)
+  json["response"]["docs"].each do |doc|
+    puts ("http://search.maven.org/" + "remotecontent?filepath=" + doc["g"].split(".").join('/') + "/" + doc["a"] + "/" + doc["latestVersion"] + "/" + doc["a"] + "-" + doc["latestVersion"] + ".pom")
+    extract_pom(Nokogiri::HTML(open("http://search.maven.org/" + "remotecontent?filepath=" + doc["g"].split(".").join('/') + "/" + doc["a"] + "/" + doc["latestVersion"] + "/" + doc["a"] + "-" + doc["latestVersion"] + ".pom")))
+  end
+end
+
+def explore_maven(doc)
+  doc.search('a').each do |link|
+    next if link.text == "../"
+    if link['href'].start_with?("#browse") && link['href'] != "#browse" && link['href'] != "#browse%7C47"
+      explore_maven(Nokogiri::HTML(open("http://search.maven.org/" + link['href']).read))
+    elsif link['href'].end_with?("pom")
+      extract_pom(Nokogiri::HTML(open("http://search.maven.org/" + link['href']).read))
+    end
+  end
+end
+doc = JSON.parse(open('http://search.maven.org/solrsearch/select?q=*:*&rows=200&wt=json').read)
+parse_maven(doc)
+
 puts "Importing APM"
 Parallel.each(JSON.parse(open('https://atom.io/api/packages').read), in_processes: nb_threads) do |package|
   @reconnected ||= Library.connection.reconnect! || true
