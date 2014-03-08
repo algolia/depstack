@@ -29,7 +29,7 @@
 
 
 .row
-  - lasts = Vote.last(3).map(&:library)
+  - lasts = Vote.select('DISTINCT(library_id)').last(3).map(&:library)
   .col-lg-6
     %h2 Last votes
     = render partial: '/libraries/summary', collection: lasts
