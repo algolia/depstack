@@ -5,6 +5,9 @@ class Library < ActiveRecord::Base
   algoliasearch per_environment: true, auto_index: false, auto_remove: false do
     add_attribute :short_name do
       case manager_cd
+      when Library.composer
+        p = name.split('/')
+        (p.length >= 2 ? p[1..-1] : p).join('/')
       when Library.go
         p = name.split('/')
         (p.length >= 3 ? p[2..-1] : p).join('/')
