@@ -223,13 +223,8 @@
           search();
         }
 
-        function getQueryVal() {
-          // cleanup user-query
-          return $q.val().trim().replace(/[-_]/g, ' ');
-        }
-
         function searchCallback(success, content) {
-          if (!success || content.query != getQueryVal()) {
+          if (!success || content.query != $q.val().trim()) {
             return;
           }
 
@@ -281,7 +276,7 @@
         }
 
         function search() {
-          var q = getQueryVal();
+          var q = $q.val().trim();
 
           var facetFilters = [];
           for (var refine in refinements) {
