@@ -33,7 +33,7 @@
       .col-lg-1.col-md-1.col-sm-1.col-xs-1.voter
         = link_to "https://github.com/#{u.login}", rel: 'nofollow' do
           - if !u.avatar_url.blank?
-            = image_tag u.avatar_url
+            = image_tag u.avatar_url, alt: u.name
           .text-center= u.login
       - if (i + 1) % 12 == 0
         </div><div class="row">
