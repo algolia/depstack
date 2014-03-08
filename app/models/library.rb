@@ -48,7 +48,7 @@ class Library < ActiveRecord::Base
     tags do
       [manager.to_s]
     end
-    attributesToIndex ['unordered(short_name)', 'unordered(description)', :homepage_uri, :repository_uri]
+    attributesToIndex ['unordered(short_name)', 'unordered(description)', :language, 'unordered(homepage_uri)', 'unordered(repository_uri)']
     customRanking ['desc(score)', 'desc(used_by_count)']
   end
 
