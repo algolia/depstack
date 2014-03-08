@@ -77,4 +77,11 @@ Depstack::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  config.middleware.use ExceptionNotification::Rack, hipchat: {
+    api_token: ENV['HIPCHAT_API_TOKEN'],
+    room_name: ENV['HIPCHAT_ROOM'],
+    notify: true,
+    from: 'depstack'
+  }
 end

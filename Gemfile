@@ -30,6 +30,8 @@ gem 'RedCloth'
 gem 'rdoc', '~> 3.6.1'
 gem 'github_api'
 gem 'parallel'
+gem 'exception_notification'
+gem 'hipchat'
 
 group :development do
   gem 'better_errors'

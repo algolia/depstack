@@ -62,6 +62,9 @@ GEM
       mail (~> 2.2)
     erubis (2.7.0)
     eventmachine (1.0.3)
+    exception_notification (4.0.1)
+      actionmailer (>= 3.0.4)
+      activesupport (>= 3.0.4)
     execjs (2.0.2)
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
@@ -95,6 +98,8 @@ GEM
     hashie (2.0.5)
     highlight (2.0.0)
     hike (1.2.3)
+    hipchat (1.0.1)
+      httparty
     hogan_assets (1.6.0)
       execjs (>= 1.2.9)
       sprockets (>= 2.0.3)
@@ -105,6 +110,9 @@ GEM
       haml (>= 4.0.0.rc.1)
       hpricot (~> 0.8.6)
       ruby_parser (~> 3.1.1)
+    httparty (0.12.0)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
     httpclient (2.3.4.1)
     i18n (0.6.9)
     jbuilder (1.5.3)
@@ -250,6 +258,7 @@ DEPENDENCIES
   bootstrap-sass (>= 3.0.0.0)
   database_cleaner (= 1.0.1)
   email_spec
+  exception_notification
   factory_girl_rails
   figaro
   font-awesome-sass
@@ -258,6 +267,7 @@ DEPENDENCIES
   github_api
   haml-rails
   highlight
+  hipchat
   hogan_assets
   html2haml
   httpclient
