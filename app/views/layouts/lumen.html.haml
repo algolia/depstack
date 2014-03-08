@@ -118,7 +118,14 @@
             <span class="label label-info">{{ manager }}</span>
           </div>
           <div class="link">
+            {{#homepage_uri}}
             <a href="{{ homepage_uri }}">{{{ _highlightResult.homepage_uri.value }}}</a>
+            {{/homepage_uri}}
+            {{^homepage_uri}}
+              {{#repository_uri}}
+              <a href="{{ repository_uri }}">{{{ _highlightResult.repository_uri.value }}}</a>
+              {{/repository_uri}}
+            {{/homepage_uri}}
           </div>
           <div class="info">{{{ _snippetResult.description.value }}}</div>
           {{#used_by_count}}
@@ -334,7 +341,7 @@
             minWordSizefor2Typos: 9,
             facetFilters: facetFilters.join(','),
             tagFilters: tagFilters.join(','),
-            attributesToRetrieve: ['manager', 'short_name', 'name', 'score', 'homepage_uri', 'used_by', 'used_by_count', 'description:100'],
+            attributesToRetrieve: ['manager', 'short_name', 'name', 'score', 'homepage_uri', 'repository_uri', 'used_by', 'used_by_count', 'description:100'],
             attributesToSnippet: ['description:100']
           });
         }
