@@ -89,7 +89,10 @@
       .container
         .pull-left
           %ul.list-inline
-            %li= link_to "Feature or pull-request?", "http://github.com/algolia/depstack", class: 'text-muted'
+            %li
+              = link_to "http://github.com/algolia/depstack", class: 'text-muted' do
+                %i.fa.fa-github
+                Feature or pull-request?
             %li.text-muted.hidden-xs
               Theme by
               = link_to "Bootswatch", "http://bootswatch.com/"

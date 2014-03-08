@@ -1,4 +1,4 @@
-- content_for :title, @library.platform ? "#{@library.platform.capitalize} library #{@library.name}" : @library.name
+- content_for :title, @library.language ? "#{@library.language} library #{@library.name}" : @library.name
 
 %article
   .row
@@ -10,7 +10,7 @@
   .row
     .col-lg-6.col-sm-8
       - unless @library.homepage_uri.blank?
-        %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green'
+        %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green', rel: 'nofollow'
       %p.text-muted.h3= @library.description
     .col-lg-3.visible-lg.text-center
       .panel.panel-default
@@ -31,7 +31,7 @@
     - users = @library.users.first(22)
     - users.each_with_index do |u, i|
       .col-lg-1.col-md-1.col-sm-1.col-xs-1.voter
-        = link_to "https://github.com/#{u.login}" do
+        = link_to "https://github.com/#{u.login}", rel: 'nofollow' do
           - if !u.avatar_url.blank?
             = image_tag u.avatar_url
           .text-center= u.login
