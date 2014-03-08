@@ -15,29 +15,7 @@ class Library < ActiveRecord::Base
         name
       end
     end
-    add_attribute :language do
-      case platform
-      when "ruby", "jruby"
-        'Ruby'
-      when 'go'
-        'Go'
-      when 'python'
-        'Python'
-      when 'php'
-        'PHP'
-      when 'js'
-        'JavaScript'
-      when 'node'
-        'Node.js'
-      when 'java'
-        'Java'
-      when 'julia'
-        'Julia'
-      else
-        nil
-      end
-    end
-    attribute :name, :description, :downloads, :manager, :homepage_uri, :repository_uri, :score, :votes_count
+    attribute :name, :description, :downloads, :manager, :language, :homepage_uri, :repository_uri, :score, :votes_count
     add_attribute :used_by do
       used_by.uniq(&:name).sort { |a,b| b.votes_count <=> a.votes_count }.first(5).map(&:name)
     end
@@ -65,6 +43,29 @@ class Library < ActiveRecord::Base
 
   def score
     used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }
+  end
+
+  def language
+    case platform
+    when "ruby", "jruby"
+      'Ruby'
+    when 'go'
+      'Go'
+    when 'python'
+      'Python'
+    when 'php'
+      'PHP'
+    when 'js'
+      'JavaScript'
+    when 'node'
+      'Node.js'
+    when 'java'
+      'Java'
+    when 'julia'
+      'Julia'
+    else
+      nil
+    end
   end
 
   def top_requirements(limit)
