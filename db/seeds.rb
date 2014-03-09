@@ -118,3 +118,15 @@ doc.search('.section').first.search('.section').each do |lib|
   library.save!
 end
 
+puts "Importing APM"
+Parallel.each(JSON.parse(open('https://atom.io/api/packages').read), in_processes: nb_threads) do |package|
+  @reconnected ||= Library.connection.reconnect! || true
+  name = package['name']
+  next if name.blank?
+  begin
+   puts name
+   Library.load!(:apm, name, fast)
+  rescue Exception => e
+   puts e
+  end
+end

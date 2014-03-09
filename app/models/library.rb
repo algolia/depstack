@@ -39,7 +39,7 @@ class Library < ActiveRecord::Base
   has_many :votes, dependent: :destroy
   has_many :users, through: :votes
 
-  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go, :julia]
+  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go, :julia, :apm]
 
   def score
     used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }
@@ -63,6 +63,8 @@ class Library < ActiveRecord::Base
       'Java'
     when 'julia'
       'Julia'
+    when 'atom'
+      'Atom'
     else
       nil
     end
@@ -152,6 +154,23 @@ class Library < ActiveRecord::Base
         library.homepage_uri = json['ProjectURL']
         library.load_dependencies! (json['Imports'] || []).map { |v| { name: v } }
       end
+    when Library.apm
+      json = JSON.parse(open("https://atom.io/api/packages/#{CGI.escape name}").read) rescue nil
+      if json
+        library.downloads = 0
+        library.platform = 'atom'
+        if json['metadata']
+          library.description = json['metadata']['description']
+          repository = json['metadata']['repository'] && (json['metadata']['repository'].is_a?(Array) ? json['metadata']['repository'].first : json['metadata']['repository'])
+          library.repository_uri = repository.is_a?(Hash) ? repository['url'] : repository
+          deps = (json['metadata']['dependencies'] || []).map do |k, v|
+            apm_package = open("https://atom.io/api/packages/#{CGI.escape k}").read rescue false
+            { name: k, requirement: v, manager: (apm_package ? :apm : :npm) }
+          end
+          library.load_dependencies! deps
+        end
+        library.repository_uri ||= json['repository']['url'] if json['repository']
+      end
     else
       raise "Unknown manager: #{manager}"
     end
@@ -162,6 +181,7 @@ class Library < ActiveRecord::Base
   def load_dependencies!(deps)
     save!
     self.dependencies = deps.map do |dep|
+      manager = dep[:manager] || self.manager
       library = Library.load!(manager, dep[:name], true)
       requirement = dep[:requirement]
       requirement = requirement['version'] if requirement.is_a?(Hash)
