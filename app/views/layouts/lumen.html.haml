@@ -42,8 +42,8 @@
             #social.hidden-xs.text-center
               %iframe{id: "gh-fork", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=fork", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "53px", height: "20px"}
               %iframe{id: "gh-start", src: "http://ghbtns.com/github-btn.html?user=algolia&repo=depstack&type=watch&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "110px", height: "20px"}
-              %a.twitter-follow-button{href: "https://twitter.com/algolia", "data-show-count" => "false", "data-show-screen-name" => "true"}Follow @algolia
-              %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "algolia", 'data-text' => 'Find & vote for popular libraries'} Tweet
+              %a.twitter-follow-button{href: "https://twitter.com/depstack", "data-show-count" => "false", "data-show-screen-name" => "true"}Follow @algolia
+              %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => root_url, "data-via" => "depstack", 'data-text' => 'Find & vote for popular libraries, realtime search powered by @algolia'} Tweet
 
         #search-form.form-horizontal
           %h1.logo
@@ -54,9 +54,9 @@
             %input.form-control#q{type:'text', autocorrect: 'off', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Find libraries by name or description'}
             %span.glyphicon.glyphicon-search.form-control-feedback
           .powered-by
-            by
-            = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=searchbar&utm_campaign=depstack' do
-              %img{src: '//www.algolia.com/assets/algolia128x40.png'}
+            realtime search by
+            = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=searchbar&utm_campaign=depstack', title: 'Hosted Realtime Search' do
+              %img{src: '//www.algolia.com/assets/algolia128x40.png', alt: 'Hosted Realtime Search'}
           .btn-group
             %button{type: 'button', class: 'btn btn-default dropdown-toggle', 'data-toggle' => 'dropdown'}
               %span#hits-type All managers
@@ -105,8 +105,8 @@
           with
           %i.fa.fa-heart
           by
-          = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=footer&utm_campaign=depstack' do
-            %img{src: '//www.algolia.com/assets/algolia128x40.png'}
+          = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=footer&utm_campaign=depstack', title: 'Hosted Realtime Search' do
+            %img{src: '//www.algolia.com/assets/algolia128x40.png', alt: 'Hosted Realtime Search'}
 
     .modal.fade#modal-log-in
       .modal-dialog
