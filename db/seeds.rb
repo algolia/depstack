@@ -119,21 +119,58 @@ doc.search('.section').first.search('.section').each do |lib|
 end
 
 puts "Importing Maven libraries"
+def replace_properties(src, attr)
+  attr = attr.gsub(/\$\{([^}]*)\}/) { 
+    match = Regexp.last_match[1]
+    path = ("//" + match.gsub(".", "/")).downcase
+    if (src.xpath(path).text == "")
+      path = "//project/properties/#{match}"
+      if (src.xpath(path).text == "")
+        return nil
+      end
+    end
+    puts attr + " => " + path + " => " + src.xpath(path).text
+    src.xpath(path).text
+  }
+  attr
+end
+
 def extract_pom(doc)
-  name = doc.xpath("//project//groupid").text + doc.xpath("//project//artifactid").text
+  name = replace_properties(doc, doc.xpath("//project/groupid").text) + replace_properties(doc, doc.xpath("//project/artifactid").text)
+  if (name == "")
+    exit 1
+  end
   p name
   library = Library.find_or_initialize_by(manager_cd: Library.managers["maven"], name: name)
-  library.description = doc.xpath("//project//description").text rescue nil
-  library.repository_uri = doc.xpath("//project//scm//url").text rescue nil
+  library.description = replace_properties(doc, doc.xpath("//project//description").text) rescue nil
+  library.repository_uri = replace_properties(doc, doc.xpath("//project//scm//url").text) rescue nil
   library.downloads = 0
   library.platform = "java"
   library.dependencies = []
+  if (library.repository_uri.include?('\$\{'))
+    puts library.repository_uri
+    exit(1)
+  end
+  if (library.description.include?("\$\{"))
+    puts library.description
+    exit(1)
+  end
+  if (library.name.include?("\$\{"))
+    puts library.name
+    exit(1)
+  end
+  library.save!
   # Dependencies
   doc.search("dependency").each do |dep|
-    name =  dep.xpath(".//groupid").text + dep.xpath(".//artifactid").text
+    if (replace_properties(doc, dep.xpath(".//groupid").text).nil? || replace_properties( doc, dep.xpath(".//artifactid").text).nil?)
+      next
+    end
+    name =  replace_properties(doc, dep.xpath(".//groupid").text) + "/" + replace_properties( doc, dep.xpath(".//artifactid").text)
     dependency = Library.find_or_initialize_by(manager_cd: Library.managers["maven"], name: name)
     dependency.save! #For missing lib
-    library.dependencies.create(destination_id: dependency.id, environnment: dep.xpath(".//scope") ? dep.xpath(".//scope").text : nil, requirement: dep.xpath(".//version").text) rescue nil #TODO parse properties
+    environment = replace_properties(doc, dep.xpath("./scope").text)
+    requirement = replace_properties(doc, dep.xpath("./version").text)
+    library.dependencies.create(destination_id: dependency.id, environment: environment, requirement: requirement)
   end
   library.save!
 end
@@ -141,7 +178,7 @@ end
 def parse_maven(json)
   json["response"]["docs"].each do |doc|
     puts ("http://search.maven.org/" + "remotecontent?filepath=" + doc["g"].split(".").join('/') + "/" + doc["a"] + "/" + doc["latestVersion"] + "/" + doc["a"] + "-" + doc["latestVersion"] + ".pom")
-    extract_pom(Nokogiri::HTML(open("http://search.maven.org/" + "remotecontent?filepath=" + doc["g"].split(".").join('/') + "/" + doc["a"] + "/" + doc["latestVersion"] + "/" + doc["a"] + "-" + doc["latestVersion"] + ".pom")))
+    extract_pom(Nokogiri::HTML(open("http://search.maven.org/" + "remotecontent?filepath=" + doc["g"].split(".").join('/') + "/" + doc["a"] + "/" + doc["latestVersion"] + "/" + doc["a"] + "-" + doc["latestVersion"] + ".pom"))) rescue next
   end
 end
 
@@ -155,7 +192,8 @@ def explore_maven(doc)
     end
   end
 end
-doc = JSON.parse(open('http://search.maven.org/solrsearch/select?q=*:*&rows=200&wt=json').read)
+
+doc = JSON.parse(open('http://search.maven.org/solrsearch/select?q=*:*&rows=2000000000&wt=json').read)
 parse_maven(doc)
 
 puts "Importing APM"
