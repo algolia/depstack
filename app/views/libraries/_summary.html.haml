@@ -13,7 +13,7 @@
     - if @votes.include?(library.id)
       %i.fa.fa-star.text-warning
     - else
-      = link_to vote_path(library) do
+      = link_to "javascript:void(0)", onclick: "vote(this, #{library.id})" do
         %i.fa.fa-chevron-circle-up.text-success
     (#{number_with_delimiter library.votes_count})
     = link_to library.name, library_path(library.manager, library.name)

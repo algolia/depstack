@@ -108,6 +108,17 @@
           = link_to 'http://www.algolia.com/?utm_source=depstack&utm_medium=link&utm_term=footer&utm_campaign=depstack' do
             %img{src: '//www.algolia.com/assets/algolia128x40.png'}
 
+    .modal.fade#modal-log-in
+      .modal-dialog
+        .modal-content
+          .modal-body
+            %p.h3.text-center You need to log in for that.
+          .modal-footer
+            %button{type: "button", class: "btn btn-default", "data-dismiss" => "modal"} Close
+            = link_to '/auth/github', class: 'btn btn-success btn-large' do
+              %i.fa.fa-github
+              Sign in with Github
+
     %script#library-hit{type: 'text/template'}
       :plain
         <div class="hit">
@@ -116,7 +127,7 @@
             <i class="fa fa-star text-warning"></i>
             {{/voted}}
             {{^voted}}
-            <a href="/vote/{{ objectID }}"><i class="fa fa-chevron-circle-up text-success"></i></a>
+            <a href="javascript:void(0)" onclick="vote(this, {{ objectID }})"><i class="fa fa-chevron-circle-up text-success"></i></a>
             {{/voted}}
             {{ score }}
             <a href="/libraries/{{ manager }}/{{ name }}">{{{ _highlightResult.short_name.value }}}</a>
@@ -152,6 +163,20 @@
     :javascript
       !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 
+      window.logged_in = #{logged_in?.inspect};
+      window.votes = #{@votes.inspect};
+
+      window.vote = function(link, library) {
+        if (!logged_in) {
+          $('#modal-log-in a').attr('href', "/auth/github?vote=" + library)
+          $('#modal-log-in').modal('show');
+        } else {
+          votes.push(library);
+          $.get('/vote/' + library);
+          $(link).replaceWith('<i class="fa fa-star text-warning"></i>');
+        }
+      };
+
       $(document).ready(function() {
         var $q = $('#q');
         var $hits = $('#hits');
@@ -186,8 +211,6 @@
             search();
           }
         });
-
-        var votes = #{@votes.inspect};
 
         window.toggleManager = function(link, m) {
           var v = $(link).text();
@@ -380,4 +403,3 @@
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
-

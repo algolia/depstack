@@ -7,6 +7,9 @@
         = @library.name
         - if !logged_in? or !current_user.has_voted?(@library)
           = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
+        - else
+          %small
+            %span.label.label-warning Voted
   .row
     .col-lg-6.col-sm-8
       - if !@library.homepage_uri.blank?

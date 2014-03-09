@@ -6,14 +6,19 @@ class VotesController < ApplicationController
   end
 
   def toggle
-    vote = current_user.votes.find_by(library_id: params[:id])
+    lib = Library.find(params[:id])
+    vote = current_user.votes.find_by(library_id: lib.id)
     if vote.nil?
-      vote = current_user.votes.create(library_id: params[:id])
+      vote = current_user.votes.create(library_id: lib.id)
       hipchat_notify! "#{current_user.login} voted for #{vote.library.name} (#{vote.library.manager})", notify: true, color: :green
     else
       vote.destroy
     end
-    redirect_to library_path(vote.library.manager, vote.library.name)
+    if request.xhr?
+      render nothing: true
+    else
+      redirect_to library_path(vote.library.manager, vote.library.name)
+    end
   end
 
 end
