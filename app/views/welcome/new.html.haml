@@ -19,6 +19,7 @@
       %strong PyPi:
       = number_with_delimiter Library.where(manager_cd: Library.pip).count
       libraries
+  %ul.list-inline
     %li
       %strong Composer:
       = number_with_delimiter Library.where(manager_cd: Library.composer).count
