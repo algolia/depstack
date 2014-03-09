@@ -9,8 +9,10 @@
           = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
   .row
     .col-lg-6.col-sm-8
-      - unless @library.homepage_uri.blank?
+      - if !@library.homepage_uri.blank?
         %h4= link_to @library.homepage_uri, @library.homepage_uri, class: 'green', rel: 'nofollow'
+      - elsif !@library.repository_uri.blank?
+        %h4= link_to @library.repository_uri, @library.repository_uri, class: 'green', rel: 'nofollow'
       %p.text-muted.h3= @library.description
     .col-lg-3.visible-lg.text-center
       .panel.panel-default
