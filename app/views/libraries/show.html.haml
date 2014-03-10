@@ -54,7 +54,9 @@
 - if (count = @library.users.count) > 0
   .row.hidden-xs
     .col-lg-12
-      %h2 Voters
+      %h2
+        Voters
+        %a.twitter-share-button{href: "https://twitter.com/share", "data-url" => request.url, "data-via" => "depstack", 'data-text' => "Vote for #{@library.name}!"} Promote #{@library.name}
   .row.hidden-xs
     - users = @library.users.first(22)
     - users.each_with_index do |u, i|
