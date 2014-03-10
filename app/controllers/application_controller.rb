@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  before_filter :setup_subdomain
   before_filter :setup_votes
   around_filter :back_rescue
 
@@ -19,6 +20,41 @@ class ApplicationController < ActionController::Base
 
   def setup_votes
     @votes = logged_in? ? current_user.votes.map(&:library_id) : []
+  end
+
+  def setup_subdomain
+    if request.get?
+      case request.host_with_port
+      when "www.depstack.io"
+        redirect_to request.url.gsub('www.depstack.io', 'depstack.io'), :status => :moved_permanently
+        return false
+      when "www.depstack.com"
+        redirect_to request.url.gsub('www.depstack.com', 'depstack.io'), :status => :moved_permanently
+        return false
+      when /^(.*)depstack\.com$/
+        redirect_to request.url.gsub("#{$1}depstack.com", "#{$1}depstack.io"), :status => :moved_permanently
+        return false
+      end
+    end
+    @manager = case request.subdomain
+    when 'ruby'
+      :rubygems
+    when 'go'
+      :go
+    when 'julia'
+      :julia
+    when 'atom'
+      :apm
+    when 'pypi'
+      :pip
+    when 'composer', 'php'
+      :composer
+    when 'js', 'node', 'npm'
+      :npm
+    else
+      nil
+    end
+    return true
   end
 
   def back_rescue

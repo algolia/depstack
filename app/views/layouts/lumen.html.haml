@@ -233,6 +233,10 @@
           return false;
         }
 
+        if ('#{@manager}' !== '') {
+          toggleManager($('a[rel="#{@manager}"]')[0], '#{@manager}');
+        }
+
         if (location.hash && location.hash.indexOf('#!/') === 0) {
           var parts = location.hash.substring(3).split('&');
           for (var i = 0; i < parts.length; ++i) {
