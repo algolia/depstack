@@ -34,6 +34,7 @@ gem 'exception_notification'
 gem 'hipchat'
 gem 'classifier'
 gem 'ruby-stemmer'
+gem 'whenever'
 
 group :development do
   gem 'better_errors'
