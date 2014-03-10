@@ -27,9 +27,12 @@ input[type="text"]:focus, input[type="checkbox"]:focus, input[type="url"]:focus,
 .spacer100 { height: 100px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer200 { height: 200px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 
+.text-default { color: #555555; }
+a.text-default:hover { color: #555555; text-decoration: underline; }
 .text-huge { font-size: 60px; }
 .text-large { font-size: 40px; }
 .text-medium { font-size: 20px; }
+.text-mini { font-size: 10px; }
 .b { font-weight: bold; }
 
 .alert { padding: 5px;}
