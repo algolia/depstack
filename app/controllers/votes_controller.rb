@@ -10,7 +10,7 @@ class VotesController < ApplicationController
     vote = current_user.votes.find_by(library_id: lib.id)
     if vote.nil?
       vote = current_user.votes.create(library_id: lib.id)
-      hipchat_notify! "#{current_user.login} voted for #{vote.library.name} (#{vote.library.manager})", notify: true, color: :green
+      hipchat_notify! "#{current_user.login} voted for #{vote.library.name} (#{vote.library.manager})", color: :green
     else
       vote.destroy
     end

@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
     u.avatar_url = h['avatar_url']
     u.name =  h['name']
     u.save!
-    hipchat_notify! "#{u.email} signed in", notify: true, color: :yellow
+    hipchat_notify! "#{u.email} signed in", color: :yellow
     session[:user_id] = u.id
     params = request.env['omniauth.params']
     if params['vote']
