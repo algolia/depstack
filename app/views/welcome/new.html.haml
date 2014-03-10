@@ -34,13 +34,14 @@
       packages
 
 .row
-  - lasts = Vote.select('DISTINCT(library_id)').last(3).map(&:library)
+  - base = (@manager.nil? ? Vote : Vote.joins(:library).where(libraries: { manager_cd: Library.managers[@manager] }))
+  - lasts = base.select('DISTINCT(library_id)').last(3).map(&:library)
   .col-lg-6
     %h2 Last votes
     = render partial: '/libraries/summary', collection: lasts
   .col-lg-6
     %h2.text-right Trending libraries
-    = render partial: '/libraries/summary', collection: Vote.where.not(library_id: lasts.map(&:id)).last(100).group_by { |v| v.library_id }.sort { |a, b| b[1].length <=> a[1].length }.first(3).map { |count, v| v.first.library }
+    = render partial: '/libraries/summary', collection: base.where.not(library_id: lasts.map(&:id)).last(100).group_by { |v| v.library_id }.sort { |a, b| b[1].length <=> a[1].length }.first(3).map { |count, v| v.first.library }
 
 - content_for :page_javascript do
   :javascript
