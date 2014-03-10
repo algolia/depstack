@@ -4,6 +4,9 @@
   .row
     .col-lg-12
       %h1
+        - if @library.language
+          %small.pull-right
+            %span.label.label-success= @library.language
         = @library.name
         - if category = @library.predict_category
           %small (#{category})
