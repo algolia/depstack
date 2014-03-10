@@ -188,7 +188,8 @@
         var $content = $('#content');
 
         var LABELS = {
-          "language": "Language"
+          "language": { order: 0, label: 'Language' },
+          "category": { order: 1, label: 'Category <small class="label label-success text-mini">beta</small>' },
         };
 
         var client = new AlgoliaSearch('#{ENV['ALGOLIA_APPLICATION_ID']}', '#{ENV['ALGOLIA_SEARCH_ONLY_API_KEY']}');
@@ -269,8 +270,14 @@
           }
 
           var facets = '';
+          var ordered_facets = [];
           for (var facet in content.facets) {
-            facets += '<h3>' + LABELS[facet] + '</h3><ul class="list-unstyled">';
+            ordered_facets.push(facet);
+          }
+          ordered_facets.sort(function(a, b) { return LABELS[a].order > LABELS[b].order; });
+          for (var j = 0; j < ordered_facets.length; ++j) {
+            var facet = ordered_facets[j];
+            facets += '<h3>' + LABELS[facet].label + '</h3><ul class="list-unstyled">';
             var values = [];
             for (var value in content.facets[facet]) {
               values.push({ key: value, count: content.facets[facet][value] });

@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'lingua/stemmer'
 
 class Library < ActiveRecord::Base
   include AlgoliaSearch
@@ -22,7 +23,10 @@ class Library < ActiveRecord::Base
     add_attribute :used_by_count do
       used_by.size
     end
-    attributesForFaceting [:language]
+    add_attribute :category do
+      predict_category
+    end
+    attributesForFaceting [:language, :category]
     tags do
       [manager.to_s]
     end
@@ -192,4 +196,30 @@ class Library < ActiveRecord::Base
     save!
   end
 
+  CLASSIFIER_THRESHOLD = -20
+  def predict_category
+    return nil if description.blank?
+    best = classifier.classifications(stem_without_stopwords(description)).sort_by { |a| a[1] }.last
+    best[1] > CLASSIFIER_THRESHOLD ? best[0] : nil
+  end
+
+  private
+  @@classifier = nil
+  def classifier
+    if @@classifier.nil?
+      @@classifier = Classifier::Bayes.new
+      JSON.parse(File.read(File.join(Rails.root, 'db', 'categories_model.json'))).each do |cat, values|
+        @@classifier.add_category cat
+        values.each do |v|
+          @@classifier.train(cat, stem_without_stopwords(v))
+        end
+      end
+    end
+    @@classifier
+  end
+
+  STOP_WORDS = /(\b|[[:punct:]])(?:(?:a|an|s|is|and|are|as|at|be|but|by|has|have|for|if|in|into|is|it|no|not|of|on|or|such|the|that|their|then|there|these|they|this|to|was|will|with)(\b|[[:punct:]]))+/i
+  def stem_without_stopwords(str)
+    str && Lingua.stemmer(str.gsub(STOP_WORDS, '\1\2'), language: 'en')
+  end
 end

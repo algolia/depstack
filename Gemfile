@@ -32,6 +32,8 @@ gem 'github_api'
 gem 'parallel'
 gem 'exception_notification'
 gem 'hipchat'
+gem 'classifier'
+gem 'ruby-stemmer'
 
 group :development do
   gem 'better_errors'
