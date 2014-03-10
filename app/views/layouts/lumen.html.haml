@@ -15,16 +15,16 @@
     %meta{name: "twitter:card", content: "summary_large_image"}
     %meta{name: "twitter:site", content: "@depstack"}
     %meta{name: "twitter:title", content: "Find & vote for popular libraries"}
-    %meta{name: "twitter:image:src", content: asset_path('logo.png')}
+    %meta{name: "twitter:image:src", content: asset_url('logo.png')}
     %meta{name: "twitter:domain", content: request.host}
 
     %meta{property: "st:title", content: "Find & vote for popular libraries" }
     %meta{property: "og:url", content: request.url }
     %meta{property: "og:site_name", content: 'Depstack.io' }
     %meta{property: "og:title", content: "Find & vote for popular libraries" }
-    %meta{property: "og:image", content: asset_path('logo.png') }
-    %meta{property: "og:image:width", content: '218' }
-    %meta{property: "og:image:height", content: '205' }
+    %meta{property: "og:image", content: asset_url('logo.png') }
+    %meta{property: "og:image:width", content: '978' }
+    %meta{property: "og:image:height", content: '800' }
 
   %body
     - if flash[:error]
