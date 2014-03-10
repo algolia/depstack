@@ -17,25 +17,44 @@
       - elsif !@library.repository_uri.blank?
         %h4= link_to @library.repository_uri, @library.repository_uri, class: 'green', rel: 'nofollow'
       %p.text-muted.h3= @library.description
-    .col-lg-3.visible-lg.text-center
+
+      - if @library.github?
+        - user, name = @library.github_repository
+        .spacer20
+        %h2
+          %i.fa.fa-github
+          Repository
+          %small= link_to "#{user}/#{name}", "http://github.com/#{user}/#{name}", rel: 'nofollow'
+        %iframe{src: "http://ghbtns.com/github-btn.html?user=#{user}&repo=#{name}&type=watch&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "110px", height: "20px"}
+        %iframe{src: "http://ghbtns.com/github-btn.html?user=#{user}&repo=#{name}&type=fork&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "95px", height: "20px"}
+        %iframe{src: "http://ghbtns.com/github-btn.html?user=#{user}&repo=#{name}&type=watch&count=true", allowtransparency: "true", frameborder: "0", scrolling: "0", width: "110px", height: "20px"}
+
+    .col-lg-2.visible-lg.text-center
       .panel.panel-default
         .panel-heading <span class="b">#</span> votes
         .panel-body
-          .text-huge= number_with_delimiter @library.votes.count
-    .col-lg-3.visible-lg.text-center
+          .text-large= number_with_delimiter @library.votes.count
+    .col-lg-2.visible-lg.text-center
+      .panel.panel-default
+        .panel-heading <span class="b">#</span> downloads
+        .panel-body
+          .text-large= @library.downloads.to_i > 0 ? number_with_delimiter(@library.downloads) : 'N/A'
+    .col-lg-2.visible-lg.text-center
       .panel.panel-default
         .panel-heading <span class="b">#</span> libraries using it
         .panel-body
-          .text-huge= number_with_delimiter @library.used_by.count
+          .text-large= number_with_delimiter @library.used_by.count
+
+  .spacer20
 
 - if (count = @library.users.count) > 0
-  .row
+  .row.hidden-xs
     .col-lg-12
       %h2 Voters
-  .row
+  .row.hidden-xs
     - users = @library.users.first(22)
     - users.each_with_index do |u, i|
-      .col-lg-1.col-md-1.col-sm-1.col-xs-1.voter
+      .col-lg-1.col-md-1.col-sm-1.voter
         = link_to "https://github.com/#{u.login}", rel: 'nofollow' do
           - if !u.avatar_url.blank?
             = image_tag u.avatar_url, alt: u.name
@@ -43,7 +62,7 @@
       - if (i + 1) % 12 == 0
         </div><div class="row">
     - if users.size < count
-      .col-lg-2.col-md-2.col-sm-2.col-xs-2
+      .col-lg-2.col-md-2.col-sm-2
         .spacer30
         and #{count - users.size} others...
 

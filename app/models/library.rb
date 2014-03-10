@@ -74,14 +74,16 @@ class Library < ActiveRecord::Base
     requirements.joins(:source).select('dependencies.*, libraries.votes_count AS votes_count').order('votes_count DESC').first(limit)
   end
 
+  GITHUB_REGEXP = /github\.com(?:\/|:)([^\/]+)\/([^\/.]+)(?:\.git)?/
+
   def github?
     uri = repository_uri || homepage_uri
-    uri && uri['github.com']
+    uri && uri.match(GITHUB_REGEXP)
   end
 
   def github_repository
     return nil if !github?
-    (repository_uri || homepage_uri).scan(/github\.com\/([^\/]+)\/([^\/]+)/).first
+    (repository_uri || homepage_uri).scan(GITHUB_REGEXP).first
   end
 
   def self.load!(manager, name, fast = false)
