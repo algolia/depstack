@@ -196,11 +196,14 @@ class Library < ActiveRecord::Base
     save!
   end
 
-  CLASSIFIER_THRESHOLD = -20
+  CLASSIFICATION_THRESHOLD = -20
+  CLASSIFICATION_MIN_WORDS = 5
   def predict_category
     return nil if description.blank?
-    best = classifier.classifications(stem_without_stopwords(description)).sort_by { |a| a[1] }.last
-    best[1] > CLASSIFIER_THRESHOLD ? best[0] : nil
+    text = stem_without_stopwords(description)
+    return nil if text.split(/\s+/).size < CLASSIFICATION_MIN_WORDS
+    best = classifier.classifications(text).sort_by { |a| a[1] }.last
+    best[1] > CLASSIFICATION_THRESHOLD ? best[0] : nil
   end
 
   private
