@@ -144,6 +144,11 @@
             {{/homepage_uri}}
           </div>
           <div class="info">{{{ _snippetResult.description.value }}}</div>
+          {{#category}}
+          <div class="categories">
+            Category: <span>{{ category }}</span>
+          </div>
+          {{/category}}
           {{#used_by_count}}
           <div class="dependencies">
             <ul class="list-inline">
@@ -375,7 +380,7 @@
             minWordSizefor2Typos: 9,
             facetFilters: facetFilters.join(','),
             tagFilters: tagFilters.join(','),
-            attributesToRetrieve: ['manager', 'short_name', 'name', 'score', 'homepage_uri', 'repository_uri', 'used_by', 'used_by_count', 'description:100'],
+            attributesToRetrieve: ['manager', 'short_name', 'name', 'score', 'homepage_uri', 'repository_uri', 'used_by', 'used_by_count', 'description', 'category'],
             attributesToSnippet: ['description:100']
           });
         }

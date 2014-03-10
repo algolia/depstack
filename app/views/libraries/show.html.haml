@@ -5,6 +5,8 @@
     .col-lg-12
       %h1
         = @library.name
+        - if category = @library.predict_category
+          %small (#{category})
         - if !logged_in? or !current_user.has_voted?(@library)
           = link_to "Vote", vote_path(@library), class: 'btn btn-small btn-success', method: 'POST'
         - else
