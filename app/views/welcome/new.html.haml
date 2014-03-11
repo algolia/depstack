@@ -19,7 +19,7 @@
         = number_with_delimiter Library.where(manager_cd: Library.npm).count
         libraries
     %li
-      %strong #{link_to "PyPi", root_url(subdomain: 'pypi'), class: 'text-default'}:
+      %strong #{link_to "PyPI", root_url(subdomain: 'pypi'), class: 'text-default'}:
       = link_to popular_path('pip'), class: 'text-default' do
         = number_with_delimiter Library.where(manager_cd: Library.pip).count
         libraries
