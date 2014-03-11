@@ -31,7 +31,7 @@ class Library < ActiveRecord::Base
       [manager.to_s]
     end
     attributesToIndex ['unordered(short_name)', 'unordered(description)', :language, 'unordered(homepage_uri)', 'unordered(repository_uri)']
-    customRanking ['desc(score)', 'desc(used_by_count)']
+    customRanking ['desc(score)', 'desc(used_by_count)', 'asc(name)']
   end
 
   has_many :dependencies, foreign_key: 'source_id', dependent: :destroy

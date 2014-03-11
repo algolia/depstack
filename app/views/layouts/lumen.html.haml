@@ -362,7 +362,7 @@
             location.replace('#!/' + params.join('&'));
           }
 
-          if (q === '') {
+          if (q === '' && !#{request.path.starts_with?(popular_path(manager: '')).inspect}) {
             $hits.empty();
             $stats.empty();
             $facets.empty();

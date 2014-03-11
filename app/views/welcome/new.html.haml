@@ -5,33 +5,40 @@
   %ul.list-inline
     %li
       %strong #{link_to "Rubygems", root_url(subdomain: 'ruby'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.rubygems).count
-      libraries
+      = link_to popular_path('rubygems'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.rubygems).count
+        libraries
     %li
       %strong #{link_to "Go", root_url(subdomain: 'go'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.go).count
-      libraries
+      = link_to popular_path('go'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.go).count
+        libraries
     %li
       %strong #{link_to "NPM", root_url(subdomain: 'npm'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.npm).count
-      libraries
+      = link_to popular_path('npm'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.npm).count
+        libraries
     %li
       %strong #{link_to "PyPi", root_url(subdomain: 'pypi'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.pip).count
-      libraries
+      = link_to popular_path('pip'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.pip).count
+        libraries
   %ul.list-inline
     %li
       %strong #{link_to "Composer", root_url(subdomain: 'composer'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.composer).count
-      libraries
+      = link_to popular_path('composer'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.composer).count
+        libraries
     %li
       %strong #{link_to "Julia", root_url(subdomain: 'julia'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.julia).count
-      libraries
+      = link_to popular_path('julia'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.julia).count
+        libraries
     %li
       %strong #{link_to "Atom", root_url(subdomain: 'atom'), class: 'text-default'}:
-      = number_with_delimiter Library.where(manager_cd: Library.apm).count
-      packages
+      = link_to popular_path('apm'), class: 'text-default' do
+        = number_with_delimiter Library.where(manager_cd: Library.apm).count
+        packages
 
 .row
   - base = (@manager.nil? ? Vote : Vote.joins(:library).where(libraries: { manager_cd: Library.managers[@manager] }))
