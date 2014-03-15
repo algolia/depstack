@@ -55,6 +55,8 @@ GEM
       execjs
     coffee-script-source (1.7.0)
     commonjs (0.2.7)
+    d3_rails (3.4.3)
+      railties (>= 3.1.0)
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
@@ -265,6 +267,7 @@ DEPENDENCIES
   binding_of_caller
   bootstrap-sass (>= 3.0.0.0)
   classifier
+  d3_rails
   database_cleaner (= 1.0.1)
   email_spec
   exception_notification

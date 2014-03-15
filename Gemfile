@@ -35,6 +35,7 @@ gem 'hipchat'
 gem 'classifier'
 gem 'ruby-stemmer'
 gem 'whenever'
+gem 'd3_rails'
 
 group :development do
   gem 'better_errors'

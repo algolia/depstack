@@ -6,6 +6,7 @@
 //= require lumen/bootswatch
 //= require algolia/algoliasearch.min
 //= require hogan
+//= require d3
 
 Number.prototype.number_with_delimiter = function(delimiter) {
   var number = this + '', delimiter = delimiter || ',';

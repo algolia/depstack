@@ -113,6 +113,10 @@
             %li.text-muted.hidden-xs
               Icons from
               = link_to "Font Awesome", "http://fontawesome.io/"
+            - m = @manager || Library.managers.to_a.shuffle.first[0]
+            %li.text-muted.hidden-xs
+              Check #{m.capitalize}'s
+              = link_to "dependencies graph", graph_path(m)
         .pull-right
           %i.fa.fa-code
           with

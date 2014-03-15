@@ -5,5 +5,6 @@ Depstack::Application.routes.draw do
   get "/signout" => "sessions#destroy", as: :signout
   get '/libraries/:manager/:name' => 'libraries#show', as: :library, constraints: { name: /.+/ }
   get '/popular/:manager' => 'libraries#index', as: :popular
+  get '/graph/:manager' => 'libraries#graph', as: :graph
   root "welcome#new"
 end
