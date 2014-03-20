@@ -32,6 +32,10 @@
       %strong Atom:
       = number_with_delimiter Library.where(manager_cd: Library.apm).count
       packages
+    %li
+      %strong Bower:
+      = number_with_delimiter Library.where(manager_cd: Library.bower).count
+      libraries
 
 .row
   - lasts = Vote.select('DISTINCT(library_id)').last(3).map(&:library)

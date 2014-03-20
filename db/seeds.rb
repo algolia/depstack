@@ -130,3 +130,37 @@ Parallel.each(JSON.parse(open('https://atom.io/api/packages').read), in_processe
    puts e
   end
 end
+
+puts "Importing Bower"
+def parse_bower(json)
+  json.each do |package|
+    name = package["name"]
+    lib = Library.find_or_initialize_by(manager_cd: Library.managers["bower"], name: name)
+    lib.description = package["description"]
+    lib.downloads =  package["fork"].to_i + package["stars"].to_i
+    lib.platform = "js"
+    lib.repository_uri = package["website"]
+    lib.save
+    p lib.repository_uri.gsub("https://github.com/", "https://raw.github.com/") + "/master/bower.json"
+    begin
+      parse_dependency(lib, JSON.parse(open(lib.repository_uri.gsub("https://github.com/", "https://raw.github.com/") + "/master/bower.json").read))
+    rescue
+      puts "404 not found"
+    end
+  end
+end
+
+def parse_dependency(library, json)
+  p json
+  return if json["dependencies"] == nil
+  json["dependencies"].each do |dep, val|
+    dependency = Library.find_or_initialize_by(manager_cd: Library.managers["npm"], name: dep)
+    if (dependency.id.nil?)
+      dependency = Library.find_or_initialize_by(manager_cd: Library.managers["bower"], name: dep)
+      dependency.save
+    end
+    library.dependencies.create(destination_id: dependency.id, environment: nil, requirement: val)
+  end
+end
+
+parse_bower(JSON.parse(open("https://bower-component-list.herokuapp.com/").read))

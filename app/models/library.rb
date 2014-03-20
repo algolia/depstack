@@ -39,7 +39,7 @@ class Library < ActiveRecord::Base
   has_many :votes, dependent: :destroy
   has_many :users, through: :votes
 
-  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go, :julia, :apm]
+  as_enum :manager, [:rubygems, :npm, :bower, :composer, :pip, :go, :julia, :apm, :bower]
 
   def score
     used_by.inject(votes_count) { |sum, lib| sum + lib.votes_count }
