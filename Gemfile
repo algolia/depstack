@@ -38,6 +38,8 @@ gem 'whenever'
 gem 'd3_rails'
 
 group :development do
+  gem 'capistrano', '2.15.5'
+  gem 'rvm-capistrano'
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_19, :mri_20, :rbx]
   gem 'html2haml'
